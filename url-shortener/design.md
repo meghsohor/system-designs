@@ -147,4 +147,4 @@ Interviewers love hearing:
 - URL analytics pipeline (Kafka → Flink → Clickhouse).
 - Spam/malware detection.
 
-<img src="url_shortener_system_design.png" alt="URL Shortener System Design" />
+[System Design: URL Shortener - diagram](url_shortener_system_design.svg)
