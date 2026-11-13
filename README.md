@@ -1,5 +1,9 @@
 # System Design Interview
 
+**Start here:** [How to approach a system design problem](APPROACH.md)
+
+## Designs
+
 1. [URL Shortener](url-shortener/design.md)
 2. [API Gateway](api-gateway/design.md)
 3. [Chat System](chat-system/design.md)
