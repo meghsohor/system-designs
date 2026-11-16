@@ -2,7 +2,7 @@
 
 **Time:** 5 min · **Output:** 3 functional requirements, 3–5 quantified non-functional requirements, an out-of-scope list
 
-[← Back to the framework](../APPROACH.md#2-requirements) · [← Understand](01-understand.md) · [Next: Estimation →](03-estimation.md)
+[← Back to the framework](index.md#2-requirements) · [← Understand](01-understand.md) · [Next: Estimation →](03-estimation.md)
 
 ## Functional requirements
 

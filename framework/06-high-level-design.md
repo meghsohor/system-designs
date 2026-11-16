@@ -2,7 +2,7 @@
 
 **Time:** 10–15 min · **Output:** a diagram that covers every functional requirement end to end
 
-[← Back to the framework](../APPROACH.md#6-high-level-design) · [← API design](05-api-design.md) · [Next: Deep dives →](07-deep-dives.md)
+[← Back to the framework](index.md#6-high-level-design) · [← API design](05-api-design.md) · [Next: Deep dives →](07-deep-dives.md)
 
 ## Why it matters
 
@@ -67,7 +67,7 @@ servers are stateful, so keep them thin and keep business logic elsewhere.
 
 ## Example
 
-See the read and write flows in [url-shortener/design.md](../url-shortener/design.md).
+See the read and write flows in [url-shortener/design.md](../designs/url-shortener/design.md).
 
 ## Mistakes to avoid
 

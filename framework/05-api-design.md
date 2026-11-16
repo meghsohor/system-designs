@@ -2,7 +2,7 @@
 
 **Time:** 3–5 min · **Output:** one endpoint or event per functional requirement
 
-[← Back to the framework](../APPROACH.md#5-api-design) · [← Core entities](04-core-entities.md) · [Next: High-level design →](06-high-level-design.md)
+[← Back to the framework](index.md#5-api-design) · [← Core entities](04-core-entities.md) · [Next: High-level design →](06-high-level-design.md)
 
 ## How to do it
 

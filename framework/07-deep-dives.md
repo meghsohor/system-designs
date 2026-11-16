@@ -2,7 +2,7 @@
 
 **Time:** ~10 min · **Output:** 2–3 weak spots, each with a fix and its trade-off
 
-[← Back to the framework](../APPROACH.md#7-deep-dives) · [← High-level design](06-high-level-design.md) · [Next: Wrap-up →](08-wrap-up.md)
+[← Back to the framework](index.md#7-deep-dives) · [← High-level design](06-high-level-design.md) · [Next: Wrap-up →](08-wrap-up.md)
 
 ## Why it matters
 

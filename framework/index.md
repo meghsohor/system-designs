@@ -1,21 +1,21 @@
 # How to Approach a System Design Problem
 
 A repeatable framework for ~45-minute system design interviews. This page is
-the cheat sheet. Each step links to a longer guide in [approach/](approach/).
+the cheat sheet. Each step links to a longer guide on its own page.
 
 Most 45-minute slots leave 35–40 minutes of design time after intros and your
 questions at the end. Plan for that, not for 45.
 
 | # | Step | Time | Output |
 |---|------|------|--------|
-| 1 | [Understand the problem](approach/01-understand.md) | 1–2 min | One-sentence restatement + system shape |
-| 2 | [Requirements](approach/02-requirements.md) | 5 min | Functional, non-functional, out of scope |
-| 3 | [Estimation](approach/03-estimation.md) | 0–3 min (often deferred) | Numbers that change a design decision |
-| 4 | [Core entities](approach/04-core-entities.md) | 2 min | Nouns the system stores and exchanges |
-| 5 | [API design](approach/05-api-design.md) | 3–5 min | Endpoints, events, payloads |
-| 6 | [High-level design](approach/06-high-level-design.md) | 10–15 min | Diagram covering every functional requirement |
-| 7 | [Deep dives](approach/07-deep-dives.md) | 10 min | 2–3 bottlenecks, failures, trade-offs |
-| 8 | [Wrap-up](approach/08-wrap-up.md) | 1–2 min (optional) | Summary + what breaks first |
+| 1 | [Understand the problem](01-understand.md) | 1–2 min | One-sentence restatement + system shape |
+| 2 | [Requirements](02-requirements.md) | 5 min | Functional, non-functional, out of scope |
+| 3 | [Estimation](03-estimation.md) | 0–3 min (often deferred) | Numbers that change a design decision |
+| 4 | [Core entities](04-core-entities.md) | 2 min | Nouns the system stores and exchanges |
+| 5 | [API design](05-api-design.md) | 3–5 min | Endpoints, events, payloads |
+| 6 | [High-level design](06-high-level-design.md) | 10–15 min | Diagram covering every functional requirement |
+| 7 | [Deep dives](07-deep-dives.md) | 10 min | 2–3 bottlenecks, failures, trade-offs |
+| 8 | [Wrap-up](08-wrap-up.md) | 1–2 min (optional) | Summary + what breaks first |
 
 ---
 
@@ -33,7 +33,7 @@ questions at the end. Plan for that, not for 45.
 **Mistake to avoid:** asking the interviewer "what are the requirements?"
 You lead. Propose, then ask for confirmation.
 
-**Go deeper:** [approach/01-understand.md](approach/01-understand.md)
+**Go deeper:** [approach/01-understand.md](01-understand.md)
 
 ## 2. Requirements
 
@@ -52,7 +52,7 @@ You lead. Propose, then ask for confirmation.
   ordering per entity and still choose availability.
 - Forgetting things the prompt explicitly mentions. Re-read it.
 
-**Go deeper:** [approach/02-requirements.md](approach/02-requirements.md)
+**Go deeper:** [approach/02-requirements.md](02-requirements.md)
 
 ## 3. Estimation
 
@@ -65,7 +65,7 @@ You lead. Propose, then ask for confirmation.
 - Quick math: 1 day ≈ 100K seconds, so 1M/day ≈ 12/sec. 1 KB × 1B items ≈ 1 TB.
 - End every number with "so…": the decision it drives.
 
-**Go deeper:** [approach/03-estimation.md](approach/03-estimation.md)
+**Go deeper:** [approach/03-estimation.md](03-estimation.md)
 
 ## 4. Core entities
 
@@ -81,7 +81,7 @@ You lead. Propose, then ask for confirmation.
 - Name the **partition key**. It decides how you shard and where hot spots appear.
 - Default to one database. Split only with a concrete reason.
 
-**Go deeper:** [approach/04-core-entities.md](approach/04-core-entities.md)
+**Go deeper:** [approach/04-core-entities.md](04-core-entities.md)
 
 ## 5. API design
 
@@ -93,7 +93,7 @@ You lead. Propose, then ask for confirmation.
 - Use cursor pagination for lists and idempotency keys for retried writes.
 - Can be done while drawing, by labeling arrows.
 
-**Go deeper:** [approach/05-api-design.md](approach/05-api-design.md)
+**Go deeper:** [approach/05-api-design.md](05-api-design.md)
 
 ## 6. High-level design
 
@@ -114,7 +114,7 @@ You lead. Propose, then ask for confirmation.
   **log**: every consumer group gets every message, and within a group each
   partition goes to one consumer.
 
-**Go deeper:** [approach/06-high-level-design.md](approach/06-high-level-design.md)
+**Go deeper:** [approach/06-high-level-design.md](06-high-level-design.md)
 
 ## 7. Deep dives
 
@@ -134,7 +134,7 @@ You lead. Propose, then ask for confirmation.
 **Mistake to avoid:** over-engineering. Multi-region active-active for a
 small system is a red flag, not a bonus.
 
-**Go deeper:** [approach/07-deep-dives.md](approach/07-deep-dives.md)
+**Go deeper:** [approach/07-deep-dives.md](07-deep-dives.md)
 
 ## 8. Wrap-up
 
@@ -142,7 +142,7 @@ small system is a red flag, not a bonus.
 - Say what breaks first at 10× load and how you'd fix it.
 - Mention what you'd add with more time (monitoring, multi-region, etc.).
 
-**Go deeper:** [approach/08-wrap-up.md](approach/08-wrap-up.md)
+**Go deeper:** [approach/08-wrap-up.md](08-wrap-up.md)
 
 ---
 

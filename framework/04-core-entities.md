@@ -2,7 +2,7 @@
 
 **Time:** 2 min, plus fields added during the high-level design · **Output:** the nouns the system stores and exchanges
 
-[← Back to the framework](../APPROACH.md#4-core-entities) · [← Estimation](03-estimation.md) · [Next: API design →](05-api-design.md)
+[← Back to the framework](index.md#4-core-entities) · [← Estimation](03-estimation.md) · [Next: API design →](05-api-design.md)
 
 ## Why before the API
 

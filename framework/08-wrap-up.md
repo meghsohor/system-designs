@@ -2,7 +2,7 @@
 
 **Time:** 1–2 min, optional · **Output:** a short summary and what you'd do next
 
-[← Back to the framework](../APPROACH.md#8-wrap-up) · [← Deep dives](07-deep-dives.md)
+[← Back to the framework](index.md#8-wrap-up) · [← Deep dives](07-deep-dives.md)
 
 ## When to do it
 

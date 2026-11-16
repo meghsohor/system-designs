@@ -3,7 +3,7 @@
 A service like Bitly or TinyURL: users turn long URLs into short links, and
 anyone who opens a short link is redirected to the original.
 
-This write-up follows the [approach guide](../APPROACH.md), one section per step.
+This write-up follows the [approach guide](../../framework/index.md), one section per step.
 
 ## 1. Understand the problem
 
@@ -233,7 +233,7 @@ invalidation), and a full analytics pipeline (Kafka → Flink → ClickHouse).
 
 ### Diagram
 
-The editable source is [url_shortener_system_design.excalidraw](url_shortener_system_design.excalidraw).
+The editable source is [url_shortener_system_design.excalidraw](https://github.com/meghsohor/system-designs/blob/main/designs/url-shortener/url_shortener_system_design.excalidraw).
 After editing it, export it as SVG over the image below.
 
-<img src="url_shortener_system_design.svg" alt="System Design: URL Shortener - diagram" />
+<img src="./url_shortener_system_design.svg" alt="System Design: URL Shortener - diagram" />

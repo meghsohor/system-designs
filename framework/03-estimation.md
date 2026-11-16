@@ -2,7 +2,7 @@
 
 **Time:** 0–3 min, often deferred · **Output:** the few numbers that change a design decision
 
-[← Back to the framework](../APPROACH.md#3-estimation) · [← Requirements](02-requirements.md) · [Next: Core entities →](04-core-entities.md)
+[← Back to the framework](index.md#3-estimation) · [← Requirements](02-requirements.md) · [Next: Core entities →](04-core-entities.md)
 
 ## When to estimate
 

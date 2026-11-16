@@ -2,7 +2,7 @@
 
 **Time:** 1–2 min · **Output:** a one-sentence restatement and the system's shape
 
-[← Back to the framework](../APPROACH.md#1-understand-the-problem) · [Next: Requirements →](02-requirements.md)
+[← Back to the framework](index.md#1-understand-the-problem) · [Next: Requirements →](02-requirements.md)
 
 ## Why it matters
 
