@@ -25,14 +25,9 @@ export const SECTIONS: SectionDef[] = [
     overviewIsPage: true,
     numbered: true,
   },
-  { id: 'core-concepts', dir: 'learn/core-concepts', title: 'Core concepts', nav: 'Concepts' },
-  {
-    id: 'key-technologies',
-    dir: 'learn/key-technologies',
-    title: 'Key technologies',
-    nav: 'Technologies',
-  },
-  { id: 'patterns', dir: 'learn/patterns', title: 'Common patterns', nav: 'Patterns' },
+  { id: 'foundations', dir: 'learn/foundations', title: 'Foundations', nav: 'Foundations' },
+  { id: 'toolbox', dir: 'learn/toolbox', title: 'Toolbox', nav: 'Toolbox' },
+  { id: 'playbook', dir: 'learn/playbook', title: 'Playbook', nav: 'Playbook' },
   { id: 'designs', dir: 'designs', title: 'Designs', nav: 'Designs' },
 ]
 
