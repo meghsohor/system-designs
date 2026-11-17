@@ -4,7 +4,7 @@ specs/
 node_modules/
 .vitepress/dist/
 .vitepress/cache/
-public/diagrams/
+content/public/diagrams/
 package-lock.json
 *.svg
 *.excalidraw

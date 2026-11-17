@@ -6,5 +6,5 @@ hero:
   actions:
     - theme: brand
       text: Start with the framework
-      link: /framework/
+      link: /learn/framework/
 ---

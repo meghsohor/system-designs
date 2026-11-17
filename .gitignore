@@ -6,7 +6,7 @@ Thumbs.db
 node_modules/
 .vitepress/dist/
 .vitepress/cache/
-public/diagrams/
+content/public/diagrams/
 
 # Editors
 .vscode/

@@ -67,7 +67,7 @@ servers are stateful, so keep them thin and keep business logic elsewhere.
 
 ## Example
 
-See the read and write flows in [url-shortener/design.md](../designs/url-shortener/design.md).
+See the read and write flows in [url-shortener/design.md](../../designs/url-shortener/design.md).
 
 ## Mistakes to avoid
 

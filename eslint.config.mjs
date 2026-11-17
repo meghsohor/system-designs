@@ -10,7 +10,7 @@ export default defineConfigWithVueTs(
       'node_modules/**',
       '.vitepress/dist/**',
       '.vitepress/cache/**',
-      'public/diagrams/**',
+      'content/public/diagrams/**',
       'specs/**',
     ],
   },

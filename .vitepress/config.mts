@@ -7,9 +7,9 @@ export default defineConfig({
   title: 'System Design Interview',
   description:
     'A 45-minute system design interview framework, the concepts behind it, and worked designs. Works offline.',
+  srcDir: 'content',
   cleanUrls: true,
   lastUpdated: true,
-  srcExclude: ['specs/**', 'README.md', 'node_modules/**'],
   markdown: {
     anchor: { slugify },
   },
