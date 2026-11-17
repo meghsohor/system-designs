@@ -33,7 +33,7 @@ questions at the end. Plan for that, not for 45.
 **Mistake to avoid:** asking the interviewer "what are the requirements?"
 You lead. Propose, then ask for confirmation.
 
-**Go deeper:** [approach/01-understand.md](01-understand.md)
+**Go deeper:** [Full guide to understanding the problem →](01-understand.md)
 
 ## 2. Requirements
 
@@ -52,7 +52,7 @@ You lead. Propose, then ask for confirmation.
   ordering per entity and still choose availability.
 - Forgetting things the prompt explicitly mentions. Re-read it.
 
-**Go deeper:** [approach/02-requirements.md](02-requirements.md)
+**Go deeper:** [Full guide to requirements →](02-requirements.md)
 
 ## 3. Estimation
 
@@ -65,7 +65,7 @@ You lead. Propose, then ask for confirmation.
 - Quick math: 1 day ≈ 100K seconds, so 1M/day ≈ 12/sec. 1 KB × 1B items ≈ 1 TB.
 - End every number with "so…": the decision it drives.
 
-**Go deeper:** [approach/03-estimation.md](03-estimation.md)
+**Go deeper:** [Full guide to estimation →](03-estimation.md)
 
 ## 4. Core entities
 
@@ -81,7 +81,7 @@ You lead. Propose, then ask for confirmation.
 - Name the **partition key**. It decides how you shard and where hot spots appear.
 - Default to one database. Split only with a concrete reason.
 
-**Go deeper:** [approach/04-core-entities.md](04-core-entities.md)
+**Go deeper:** [Full guide to core entities →](04-core-entities.md)
 
 ## 5. API design
 
@@ -93,7 +93,7 @@ You lead. Propose, then ask for confirmation.
 - Use cursor pagination for lists and idempotency keys for retried writes.
 - Can be done while drawing, by labeling arrows.
 
-**Go deeper:** [approach/05-api-design.md](05-api-design.md)
+**Go deeper:** [Full guide to API design →](05-api-design.md)
 
 ## 6. High-level design
 
@@ -114,7 +114,7 @@ You lead. Propose, then ask for confirmation.
   **log**: every consumer group gets every message, and within a group each
   partition goes to one consumer.
 
-**Go deeper:** [approach/06-high-level-design.md](06-high-level-design.md)
+**Go deeper:** [Full guide to high-level design →](06-high-level-design.md)
 
 ## 7. Deep dives
 
@@ -134,7 +134,7 @@ You lead. Propose, then ask for confirmation.
 **Mistake to avoid:** over-engineering. Multi-region active-active for a
 small system is a red flag, not a bonus.
 
-**Go deeper:** [approach/07-deep-dives.md](07-deep-dives.md)
+**Go deeper:** [Full guide to deep dives →](07-deep-dives.md)
 
 ## 8. Wrap-up
 
@@ -142,7 +142,7 @@ small system is a red flag, not a bonus.
 - Say what breaks first at 10× load and how you'd fix it.
 - Mention what you'd add with more time (monitoring, multi-region, etc.).
 
-**Go deeper:** [approach/08-wrap-up.md](08-wrap-up.md)
+**Go deeper:** [Full guide to the wrap-up →](08-wrap-up.md)
 
 ---
 
