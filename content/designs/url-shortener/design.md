@@ -121,6 +121,7 @@ two services that scale on their own.
 
 ```mermaid
 flowchart LR
+  accTitle: Creating a short URL
   C[Client] -->|POST /urls| G[API Gateway<br/>auth, rate limit]
   G --> U[URL Service<br/>stateless]
   U -->|claim a block of 1,000 IDs| K[(ID counter)]
@@ -138,6 +139,7 @@ flowchart LR
 
 ```mermaid
 flowchart LR
+  accTitle: Redirecting a short URL
   C[Client] -->|GET /abc123| L[Load balancer]
   L --> S[Redirect Service<br/>stateless, in-process hot cache]
   S -->|get short_code| R[(Redis cache)]

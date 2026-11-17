@@ -81,3 +81,49 @@
     font-size: 40px;
   }
 }
+
+/* Diagrams show at natural size up to the column width. They shrink further only when the
+   screen is wide enough for zoom to show them at 75% or more. Otherwise they stay at 75%,
+   so labels are at least 12 px, and scroll sideways. */
+.vp-doc .diagram {
+  --readable-width: calc(var(--diagram-width, 0px) * 0.75);
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.vp-doc .diagram img {
+  height: auto;
+  /* The readable width when the screen is narrower than it, otherwise 0. */
+  min-width: clamp(0px, (var(--readable-width) - 100vw) * 1000, var(--readable-width));
+}
+
+/* Diagrams are drawn for a light page. The zoomed copy sits outside .vp-doc. */
+.dark .vp-doc img,
+.dark img.medium-zoom-image--opened {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+/* Zoom would only shrink this image (see zoom.ts). */
+.vp-doc img.book-no-zoom {
+  cursor: auto;
+}
+
+/* Inside the ring: the diagram box would clip a ring drawn outside the image. */
+.vp-doc img.medium-zoom-image:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: -2px;
+}
+
+.vp-doc .diagram:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+/* Above the nav (30) and the mobile sidebar (60). */
+.medium-zoom-overlay {
+  z-index: 100;
+}
+
+.medium-zoom-image--opened {
+  z-index: 101;
+}

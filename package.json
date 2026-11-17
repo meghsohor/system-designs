@@ -6,8 +6,9 @@
     "node": ">=26"
   },
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build && node scripts/check-links.ts",
+    "dev": "node scripts/render-mermaid.ts --keep-going && vitepress dev",
+    "build": "npm run diagrams && vitepress build && node scripts/check-links.ts",
+    "diagrams": "node scripts/render-mermaid.ts",
     "preview": "vitepress preview",
     "check": "vue-tsc --noEmit && eslint . && prettier --check .",
     "format": "prettier --write .",
@@ -17,6 +18,7 @@
     "@fontsource-variable/inter": "5.3.0",
     "@fontsource-variable/jetbrains-mono": "5.3.0",
     "@fontsource/space-grotesk": "5.3.0",
+    "@mermaid-js/mermaid-cli": "12.2.0",
     "@types/markdown-it": "14.1.2",
     "@types/node": "26.6.6",
     "@vue/eslint-config-typescript": "14.9.0",
@@ -28,7 +30,9 @@
     "github-slugger": "2.0.0",
     "globals": "17.14.0",
     "markdown-it": "14.3.3",
+    "medium-zoom": "1.1.2",
     "prettier": "3.10.1",
+    "puppeteer": "25.16.0",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.2",
     "vitepress": "1.6.4",
@@ -37,6 +41,7 @@
   },
   "allowScripts": {
     "esbuild@0.21.5": true,
-    "fsevents": false
+    "fsevents": false,
+    "puppeteer@25.16.0": true
   }
 }

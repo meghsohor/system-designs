@@ -5,8 +5,9 @@ System design interview notes, published as an offline-first ebook at https://me
 ## Commands
 
 - `nvm use` — Node 26 (see `.nvmrc`)
-- `npm run dev` — dev server at http://localhost:5173/system-designs/
-- `npm run build` — VitePress build, then `scripts/check-links.ts` (fails on any broken internal link, image or `#anchor`)
+- `npm run dev` — renders diagrams, then the dev server at http://localhost:5173/system-designs/
+- `npm run build` — renders diagrams, VitePress build, then `scripts/check-links.ts` (fails on any broken internal link, image or `#anchor`)
+- `npm run diagrams` — renders Mermaid blocks to `content/public/diagrams/` (git-ignored) and deletes unused ones
 - `npm run preview` — serve the built site
 - `npm test` — unit tests in `tests/`
 - `npm run check` — `vue-tsc`, ESLint and Prettier; run before every commit
@@ -20,7 +21,7 @@ System design interview notes, published as an offline-first ebook at https://me
   - `designs/<name>/design.md` — worked designs, with an optional `quiz.md`
   - `index.md` — home page
 - `.vitepress/config.mts` — site config
-- `.vitepress/lib/` — Node-side code: `catalog.ts` (table of contents and build validation), `sidebar.ts`, `slug.ts`
+- `.vitepress/lib/` — Node-side code: `catalog.ts` (table of contents and build validation), `mermaid.ts` (diagram rendering), `sidebar.ts`, `slug.ts`
 - `.vitepress/theme/` — Vue components and CSS
 - `scripts/` — build scripts; `tests/` — unit tests
 - `specs/` — local-only planning docs (git-excluded)
@@ -32,6 +33,7 @@ System design interview notes, published as an offline-first ebook at https://me
 - A page with nothing after its title shows as "Coming soon" and doesn't count towards progress.
 - Use relative `.md` links so they work on GitHub and on the site. Heading anchors use GitHub's slugs.
 - Name links after what the reader gets, never a file path: `[Full guide to requirements →](02-requirements.md)`.
+- Mermaid diagrams are ` ```mermaid ` blocks; the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block to give the image alt text.
 - Images use `./` paths. Excalidraw diagrams keep the `.excalidraw` source next to the exported `.svg` (no embedded scene); link the source by its GitHub URL, since it isn't part of the site.
 - Prettier never touches `.md` files.
 
