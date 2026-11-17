@@ -61,6 +61,23 @@
   }
 }
 
+/* VitePress moves the nav links out of the menu at 768 px, but our five links only fit next
+   to search once the sidebar appears at 960 px. Until then they stay in the menu. */
+@media (min-width: 768px) and (max-width: 959px) {
+  body .VPNavBar .VPNavBarMenu,
+  body .VPNavBar .VPNavBarExtra {
+    display: none;
+  }
+
+  body .VPNavBar .VPNavBarHamburger {
+    display: flex;
+  }
+
+  body .VPNav .VPNavScreen {
+    display: block;
+  }
+}
+
 /* Display font for page titles, section headings and the site name. */
 .vp-doc h1,
 .vp-doc h2,
