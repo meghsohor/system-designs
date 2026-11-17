@@ -1,0 +1,37 @@
+{
+  "name": "system-designs",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=26"
+  },
+  "scripts": {
+    "dev": "vitepress dev",
+    "build": "vitepress build && node scripts/check-links.ts",
+    "preview": "vitepress preview",
+    "check": "vue-tsc --noEmit && eslint . && prettier --check .",
+    "format": "prettier --write .",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.6",
+    "@vue/eslint-config-typescript": "14.9.0",
+    "entities": "7.0.1",
+    "eslint": "10.15.0",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-vue": "10.12.1",
+    "eslint-plugin-vuejs-accessibility": "2.6.3",
+    "github-slugger": "2.0.0",
+    "globals": "17.14.0",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.2",
+    "vitepress": "1.6.4",
+    "vitest": "3.2.7",
+    "vue-tsc": "3.3.14"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "fsevents": false
+  }
+}

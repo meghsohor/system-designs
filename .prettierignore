@@ -1,0 +1,10 @@
+# Notes are hand-formatted; never rewrap them.
+**/*.md
+specs/
+node_modules/
+.vitepress/dist/
+.vitepress/cache/
+public/diagrams/
+package-lock.json
+*.svg
+*.excalidraw
