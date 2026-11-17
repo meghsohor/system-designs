@@ -3,7 +3,7 @@
 A service like Bitly or TinyURL: users turn long URLs into short links, and
 anyone who opens a short link is redirected to the original.
 
-This write-up follows the [approach guide](../../learn/framework/index.md), one section per step.
+This write-up follows the [interview framework](../../learn/framework/index.md), one section per step.
 
 ## 1. Understand the problem
 

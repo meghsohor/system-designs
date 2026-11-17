@@ -1,7 +1,8 @@
 # Designs
 
-Worked designs that follow the [interview framework](../learn/framework/index.md)
-step by step. Each one ends with a quiz once it's written.
+Complete designs, each worked through one step at a time with the
+[interview framework](../learn/framework/index.md). Each one ends with a quiz
+once it's written.
 
 - [URL Shortener](url-shortener/design.md): key-value lookups, short codes, caching viral links and counting clicks.
 - [API Gateway](api-gateway/design.md): routing, auth and rate limiting in front of many services.

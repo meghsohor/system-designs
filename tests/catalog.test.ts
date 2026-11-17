@@ -3,6 +3,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
+  firstSentence,
   isComingSoon,
   kindOf,
   linkOf,
@@ -28,6 +29,23 @@ describe('titleOf', () => {
     expect(titleOf('﻿# Redis\n')).toBe('Redis')
     expect(titleOf('---\n---\n# Redis\n')).toBe('Redis')
     expect(titleOf('# **Redis** and `etcd`\n')).toBe('Redis and etcd')
+  })
+})
+
+describe('firstSentence', () => {
+  it('returns the first sentence of the first paragraph as plain text', () => {
+    const src = '# Toolbox\n\nThe [building blocks](x.md) you\ndraw. Second sentence.\n'
+    expect(firstSentence(src)).toBe('The building blocks you draw.')
+  })
+  it('keeps decimals and returns undefined without a paragraph', () => {
+    expect(firstSentence('# T\n\nVersion 1.6 is stable')).toBe('Version 1.6 is stable')
+    expect(firstSentence('# T\n')).toBeUndefined()
+  })
+  it('ignores list items and abbreviations', () => {
+    expect(firstSentence('# T\n\n- [A](a.md): first item.\n')).toBeUndefined()
+    expect(firstSentence('# T\n\nTools, e.g. Redis, that help. More.')).toBe(
+      'Tools, e.g. Redis, that help.',
+    )
   })
 })
 

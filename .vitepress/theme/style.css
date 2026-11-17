@@ -1,0 +1,83 @@
+/* Self-hosted fonts, Latin subset only, so they work offline and stay small. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('@fontsource/space-grotesk/files/space-grotesk-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+    format('woff2');
+}
+
+:root {
+  --vp-font-family-base:
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --vp-font-family-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --book-font-display: 'Space Grotesk', var(--vp-font-family-base);
+
+  /* Teal brand. brand-1 is used for text and links, brand-3 for filled buttons. */
+  --vp-c-brand-1: #0e7490;
+  --vp-c-brand-2: #155e75;
+  --vp-c-brand-3: #0e7490;
+  --vp-c-brand-soft: rgba(14, 116, 144, 0.12);
+}
+
+.dark {
+  --vp-c-brand-1: #22d3ee;
+  --vp-c-brand-2: #67e8f9;
+  --vp-c-brand-3: #0e7490;
+  --vp-c-brand-soft: rgba(34, 211, 238, 0.14);
+  /* The theme takes button hover and press colours from brand-2 and brand-1, which are
+     light cyan in dark mode; white text needs darker shades. */
+  --vp-button-brand-hover-bg: #155e75;
+  --vp-button-brand-active-bg: #164e63;
+}
+
+/* At 320 px the logo pushes the nav wider than the screen. */
+@media (max-width: 359px) {
+  .VPNavBarTitle .logo {
+    display: none;
+  }
+}
+
+/* Display font for page titles, section headings and the site name. */
+.vp-doc h1,
+.vp-doc h2,
+.VPNavBarTitle .title,
+.VPHero .name,
+.VPHero .text {
+  font-family: var(--book-font-display);
+  letter-spacing: -0.02em;
+}
+
+.vp-doc h1 {
+  font-size: 36px;
+  line-height: 1.15;
+}
+
+@media (min-width: 768px) {
+  .vp-doc h1 {
+    font-size: 40px;
+  }
+}

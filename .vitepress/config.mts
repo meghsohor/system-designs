@@ -10,6 +10,7 @@ export interface ThemeConfig extends DefaultTheme.Config {
   catalog: CatalogSection[]
 }
 
+const BASE = '/system-designs/'
 const contentDir = fileURLToPath(new URL('../content', import.meta.url))
 const configFile = fileURLToPath(import.meta.url)
 const catalog = loadCatalog(contentDir)
@@ -42,7 +43,7 @@ function catalogReload(): Plugin {
 }
 
 export default defineConfigWithTheme<ThemeConfig>({
-  base: '/system-designs/',
+  base: BASE,
   lang: 'en',
   title: 'System Design Interview',
   description:
@@ -56,8 +57,10 @@ export default defineConfigWithTheme<ThemeConfig>({
   vite: {
     plugins: [catalogReload()],
   },
+  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: `${BASE}logo.svg` }]],
   themeConfig: {
     catalog,
+    logo: { src: '/logo.svg', alt: '' },
     nav: buildNav(catalog),
     sidebar: buildSidebar(catalog),
     outline: { level: [2, 3] },

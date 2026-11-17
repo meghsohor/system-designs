@@ -46,6 +46,7 @@ export interface CatalogSection {
   id: string
   title: string
   nav: string
+  summary?: string
   overviewLink: string
   overviewPath: string
   pages: CatalogPage[]
@@ -71,8 +72,10 @@ function blocks(src: string): Token[] {
 
 function plainText(tokens: Token[]): string {
   return tokens
-    .filter((t) => t.type === 'text' || t.type === 'code_inline')
-    .map((t) => t.content)
+    .map((t) => {
+      if (t.type === 'text' || t.type === 'code_inline') return t.content
+      return t.type === 'softbreak' || t.type === 'hardbreak' ? ' ' : ''
+    })
     .join('')
 }
 
@@ -81,6 +84,24 @@ export function titleOf(src: string): string | undefined {
   const [open, inline] = blocks(src)
   if (open?.type !== 'heading_open' || open.tag !== 'h1') return undefined
   return plainText(inline?.children ?? []).trim() || undefined
+}
+
+/** The first sentence of the first paragraph, as plain text. */
+export function firstSentence(src: string): string | undefined {
+  const tokens = blocks(src)
+  // List items wrap their text in hidden paragraphs; only a real intro paragraph counts.
+  const at = tokens.findIndex((t) => t.type === 'paragraph_open' && !t.hidden)
+  if (at === -1) return undefined
+  const text = plainText(tokens[at + 1]?.children ?? [])
+    .replace(/\s+/g, ' ')
+    .trim()
+  // A sentence ends at . ! or ? before a capital letter or the end, unless it closes an
+  // abbreviation like "e.g.", so "e.g. Redis" stays whole.
+  for (const m of text.matchAll(/[.!?](?=\s+[A-Z]|$)/g)) {
+    const end = m.index + 1
+    if (!/\b(?:e\.g|i\.e|etc|vs|approx)\.$/i.test(text.slice(0, end))) return text.slice(0, end)
+  }
+  return text || undefined
 }
 
 /** True when the page has nothing after its `# Title`. */
@@ -165,6 +186,7 @@ export function loadCatalog(contentDir: string, sections = SECTIONS): CatalogSec
       return section
     }
     const indexSrc = read(indexPath)
+    section.summary = firstSentence(indexSrc)
     const links = parseIndexLinks(indexSrc, def.dir)
 
     if (def.overviewIsPage) {

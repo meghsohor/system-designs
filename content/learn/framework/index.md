@@ -1,6 +1,6 @@
 # How to Approach a System Design Problem
 
-A repeatable framework for ~45-minute system design interviews. This page is
+How to run a 45-minute system design interview, step by step. This page is
 the cheat sheet. Each step links to a longer guide on its own page.
 
 Most 45-minute slots leave 35–40 minutes of design time after intros and your

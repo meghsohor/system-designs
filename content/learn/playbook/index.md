@@ -1,9 +1,9 @@
 # Playbook
 
-Problems an interviewer pushes on during deep dives, and the moves that solve
-them. Each page follows the deep-dive structure from
-[step 7](../framework/07-deep-dives.md): the problem, the options, a choice and
-its trade-off.
+Common problems in a design, such as too much traffic or two people wanting
+the same thing, and the usual ways to solve them. Each page follows the
+deep-dive structure from [step 7](../framework/07-deep-dives.md): the problem,
+the options, a choice and its trade-off.
 
 - [Too many reads](too-many-reads.md): the database can't keep up with lookups.
 - [Too many writes](too-many-writes.md): one machine can't absorb the incoming data.

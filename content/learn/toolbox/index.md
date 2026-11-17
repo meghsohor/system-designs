@@ -1,7 +1,7 @@
 # Toolbox
 
-The building blocks you draw in a high-level design, grouped by the job they
-do. Each page compares the usual options, so you can say why you picked one.
+Databases, queues, caches and the other parts that go into a design, grouped
+by what they do. Each page compares the usual options and when each one fits.
 
 - [Databases](databases.md): relational, key-value and wide-column stores, and how to choose between them.
 - [In-memory stores](in-memory-stores.md): fast reads, counters, locks and leaderboards held in memory.

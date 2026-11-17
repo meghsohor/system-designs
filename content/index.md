@@ -1,10 +1,7 @@
 ---
-layout: home
-hero:
-  name: System Design Interview
-  tagline: A 45-minute interview framework and worked designs.
-  actions:
-    - theme: brand
-      text: Start with the framework
-      link: /learn/framework/
+layout: page
+sidebar: false
+aside: false
 ---
+
+<HomePage />

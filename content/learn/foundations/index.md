@@ -1,7 +1,8 @@
 # Foundations
 
-The ideas the [interview framework](../framework/index.md) leans on, in the
-order you need them. Each page says which step it supports.
+Ideas like consistency, indexing and caching that come up in almost every
+design. They follow the order of the [interview framework](../framework/index.md),
+and each page names the step where it's used.
 
 - [Consistency and availability](consistency-and-availability.md): Step 2. Deciding what may be stale and what must never be.
 - [Numbers worth remembering](numbers-worth-remembering.md): Step 3. Latencies, throughputs and sizes for quick estimates.
