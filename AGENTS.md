@@ -22,7 +22,7 @@ System design interview notes, published as an offline-first ebook at https://me
   - `index.md` — home page
 - `.vitepress/config.mts` — site config
 - `.vitepress/lib/` — Node-side code: `catalog.ts` (table of contents and build validation), `mermaid.ts` (diagram rendering), `sidebar.ts`, `slug.ts`
-- `.vitepress/theme/` — Vue components and CSS
+- `.vitepress/theme/` — Vue components and CSS; `progress/store.ts` keeps reading progress and quiz scores in `localStorage`
 - `scripts/` — build scripts; `tests/` — unit tests
 - `specs/` — local-only planning docs (git-excluded)
 
