@@ -119,15 +119,7 @@ two services that scale on their own.
    collides with an old alias, it takes the next ID.
 5. It deletes any "not found" cache entry for that code, then returns the short URL.
 
-```mermaid
-flowchart LR
-  accTitle: Creating a short URL
-  C[Client] -->|POST /urls| G[API Gateway<br/>auth, rate limit]
-  G --> U[URL Service<br/>stateless]
-  U -->|claim a block of 1,000 IDs| K[(ID counter)]
-  U -->|conditional put<br/>short_code, long_url, expires_at| D[(URL store<br/>partitioned by short_code)]
-  U -->|delete not-found entry| R[(Redis cache)]
-```
+![Client sends POST /urls through the API gateway to the URL service, which claims blocks of IDs from the ID counter, writes to the URL store and clears the not-found entry in Redis](./create-short-url.svg "Creating a short URL")
 
 ### Redirect
 
@@ -137,17 +129,7 @@ flowchart LR
 4. It publishes a click event to Kafka without waiting for the result, so
    analytics never slows a redirect down.
 
-```mermaid
-flowchart LR
-  accTitle: Redirecting a short URL
-  C[Client] -->|GET /abc123| L[Load balancer]
-  L --> S[Redirect Service<br/>stateless, in-process hot cache]
-  S -->|get short_code| R[(Redis cache)]
-  S -->|on miss: get short_code| D[(URL store)]
-  S -.->|click event, async| Q[[Kafka: clicks<br/>partitioned by short_code]]
-  Q --> A[Click aggregator]
-  A -->|counts per minute| CC[(Click counts)]
-```
+![Client sends GET /abc123 through the load balancer to the redirect service, which reads Redis, then the URL store on a miss, and sends click events through Kafka to the click aggregator and click counts](./redirect.svg "Redirecting a short URL")
 
 ## 7. Deep dives
 
@@ -236,6 +218,8 @@ invalidation), and a full analytics pipeline (Kafka → Flink → ClickHouse).
 ### Diagram
 
 The editable source is the [Excalidraw file](https://github.com/meghsohor/system-designs/blob/main/content/designs/url-shortener/url_shortener_system_design.excalidraw).
-After editing it, export it as SVG over the image below.
+After editing it, export it as SVG over the image below, and export the
+"Create a short URL" and "Redirect" frames over `create-short-url.svg` and
+`redirect.svg`.
 
 ![URL Shortener system design diagram](./url_shortener_system_design.svg "The whole design in one picture")

@@ -33,7 +33,10 @@ System design interview notes, published as an offline-first ebook at https://me
 - A page with nothing after its title shows as "Coming soon" and doesn't count towards progress.
 - Use relative `.md` links so they work on GitHub and on the site. Heading anchors use GitHub's slugs.
 - Name links after what the reader gets, never a file path: `[Full guide to requirements →](02-requirements.md)`.
-- Mermaid diagrams are ` ```mermaid ` blocks; the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block: it becomes the image's alt text and caption.
+- Diagrams for a design are drawn in Excalidraw. The `.excalidraw` source sits next to its exported `.svg` (export without the embedded scene); link the source by its GitHub URL, since it isn't part of the site.
+  - Each part a note shows on its own is an Excalidraw frame, named after what it shows. Export each frame as SVG (select the frame → Export image, background off, 1×) next to the note, named after the frame in kebab case (`create-short-url.svg`), and use it as an image with a caption.
+  - Excalidraw shows frame names and outlines in a full-drawing export; turn them off under View if they get in the way.
+- Mermaid ` ```mermaid ` blocks still work for quick diagrams: the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block: it becomes the image's alt text and caption.
 - Images use markdown syntax with `./` paths, alone in their paragraph: `![What it shows](./x.svg "Caption")`. The title becomes the caption. Raw `<img>` tags get no caption or zoom button.
 - Diagrams and images fit the column and get a zoom button that opens them in a popup.
 - Callouts use GitHub alert syntax, so they work on GitHub too. Put the marker alone on the first line:
@@ -42,7 +45,7 @@ System design interview notes, published as an offline-first ebook at https://me
   - `> [!IMPORTANT]` something not to miss
   - `> [!WARNING]` a common mistake
   - `> [!CAUTION]` something that breaks things
-  Don't use VitePress `::: tip` containers; GitHub shows them as plain text. Excalidraw diagrams keep the `.excalidraw` source next to the exported `.svg` (no embedded scene); link the source by its GitHub URL, since it isn't part of the site.
+  Don't use VitePress `::: tip` containers; GitHub shows them as plain text.
 - Prettier never touches `.md` files.
 
 ## Conventions
