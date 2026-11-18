@@ -22,7 +22,9 @@ System design interview notes, published as an offline-first ebook at https://me
   - `index.md` — home page
 - `.vitepress/config.mts` — site config
 - `.vitepress/lib/` — Node-side code: `catalog.ts` (table of contents and build validation), `mermaid.ts` (diagram rendering), `sidebar.ts`, `slug.ts`
-- `.vitepress/theme/` — Vue components and CSS; `progress/store.ts` keeps reading progress and quiz scores in `localStorage`
+- `.vitepress/theme/` — Vue components and CSS
+  - `progress/store.ts` keeps reading progress and quiz scores in `localStorage`; `progress/useProgress.ts` is its Vue wrapper; `progress/reading.ts` holds the in-progress/done rules; `progress/live.ts` is where the reader is right now
+  - `components/VPSidebarItem.vue`, `VPDocOutlineItem.vue` and `VPLocalNavOutlineDropdown.vue` are our copies of VitePress components (sidebar marks and `<details>` groups, read-section ticks, the % read ring), swapped in by an alias in the config; recheck them when upgrading VitePress
 - `scripts/` — build scripts; `tests/` — unit tests
 - `specs/` — local-only planning docs (git-excluded)
 

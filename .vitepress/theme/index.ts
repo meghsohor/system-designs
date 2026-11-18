@@ -3,6 +3,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import BookLayout from './BookLayout.vue'
 import HomePage from './components/HomePage.vue'
+import PageActions from './components/PageActions.vue'
 import './style.css'
 
 export default {
@@ -10,5 +11,6 @@ export default {
   Layout: BookLayout,
   enhanceApp({ app }) {
     app.component('HomePage', HomePage)
+    app.component('PageActions', PageActions)
   },
 } satisfies Theme
