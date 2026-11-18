@@ -78,6 +78,14 @@
   }
 }
 
+/* From 960 px the sidebar takes room, and five links, search, the menu and the Aa button
+   only just fit; tighter link padding keeps the Aa button on screen until 1100 px. */
+@media (min-width: 960px) and (max-width: 1099px) {
+  body .VPNavBarMenu .VPNavBarMenuLink {
+    padding: 0 8px;
+  }
+}
+
 /* Display font for page titles, section headings and the site name. */
 .vp-doc h1,
 .vp-doc h2,
@@ -89,14 +97,60 @@
 }
 
 .vp-doc h1 {
-  font-size: 36px;
+  font-size: calc(36px * var(--book-text-scale, 1));
   line-height: 1.15;
 }
 
 @media (min-width: 768px) {
   .vp-doc h1 {
-    font-size: 40px;
+    font-size: calc(40px * var(--book-text-scale, 1));
   }
+}
+
+/* Text size: VitePress sizes note text in fixed pixels, so each size is multiplied by the
+   reader's choice (--book-text-scale on <html>, 1 by default). Nav and sidebar stay as they are. */
+.vp-doc {
+  --vp-custom-block-font-size: calc(14px * var(--book-text-scale, 1));
+  font-size: calc(16px * var(--book-text-scale, 1));
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc p {
+  line-height: calc(28px * var(--book-text-scale, 1));
+}
+
+.vp-doc h2 {
+  font-size: calc(24px * var(--book-text-scale, 1));
+  line-height: calc(32px * var(--book-text-scale, 1));
+}
+
+.vp-doc h3 {
+  font-size: calc(20px * var(--book-text-scale, 1));
+  line-height: calc(28px * var(--book-text-scale, 1));
+}
+
+.vp-doc h4 {
+  font-size: calc(18px * var(--book-text-scale, 1));
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc blockquote > p {
+  font-size: calc(16px * var(--book-text-scale, 1));
+}
+
+.vp-doc th,
+.vp-doc td {
+  font-size: calc(14px * var(--book-text-scale, 1));
+}
+
+.vp-doc .custom-block,
+.vp-doc .custom-block p {
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc h5,
+.vp-doc h6 {
+  font-size: calc(16px * var(--book-text-scale, 1));
 }
 
 /* Pictures fit the column. Under each: the caption centred, the zoom button on the right
@@ -121,7 +175,7 @@
   grid-row: 2;
   color: var(--vp-c-text-2);
   text-align: center;
-  font-size: 14px;
+  font-size: calc(14px * var(--book-text-scale, 1));
   line-height: 1.5;
 }
 

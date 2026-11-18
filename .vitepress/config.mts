@@ -15,6 +15,7 @@ import {
 import { buildNav, buildSidebar } from './lib/sidebar.ts'
 import { figureHtml, localSvgBaseWidth, markFigures } from './lib/figure.ts'
 import { slugify } from './lib/slug.ts'
+import { textSizeScript } from './lib/text-size.ts'
 
 export interface ThemeConfig extends DefaultTheme.Config {
   catalog: CatalogSection[]
@@ -159,7 +160,10 @@ export default defineConfigWithTheme<ThemeConfig>({
   vite: {
     plugins: [catalogReload(), diagramsMode, diagramsOnSave()],
   },
-  head: [['link', { rel: 'icon', type: 'image/svg+xml', href: `${BASE}logo.svg` }]],
+  head: [
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: `${BASE}logo.svg` }],
+    ['script', {}, textSizeScript()],
+  ],
   themeConfig: {
     catalog,
     logo: { src: '/logo.svg', alt: '' },

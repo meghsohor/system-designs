@@ -52,6 +52,6 @@ System design interview notes, published as an offline-first ebook at https://me
 
 - TypeScript `strict`. Node scripts run as `.ts` with Node's type stripping: import with the `.ts` extension and use erasable syntax only (no enums or namespaces).
 - Vue components use `<script setup lang="ts">`. Prefer native HTML elements (`<dialog>`, `popover`, `<select>`, `<details>`, `<progress>`, forms) over custom widgets; no UI or CSS library. Style with VitePress CSS variables.
-- State saved in the browser loads in `onMounted`, never during server rendering.
+- State saved in the browser loads in `onMounted`, never during server rendering. The one exception is the text size: a tiny `<head>` script (`.vitepress/lib/text-size.ts`) applies it before the first paint, so text never jumps size.
 - Pin exact dependency versions. A new package with install scripts must be approved with `npm install-scripts approve <pkg>`; the decision is recorded in `package.json` `allowScripts`.
 - Commit messages are one line, starting with `Added:`, `Updated:`, `Moved:` or `Fixed:`.
