@@ -11,6 +11,7 @@ import {
 import { createRequire } from 'node:module'
 import { join, relative, sep } from 'node:path'
 import MarkdownIt from 'markdown-it'
+import { escapeAttr, figureHtml } from './figure.ts'
 
 // Part of every diagram's hash, so changing a setting or upgrading Mermaid re-renders all diagrams.
 const MERMAID_VERSION: string = createRequire(import.meta.url)('mermaid/package.json').version
@@ -46,9 +47,9 @@ export function diagramHash(source: string): string {
     .slice(0, 16)
 }
 
-/** The diagram's accessible title (`accTitle: …`), used as the image's alt text. */
-export function diagramTitle(source: string): string {
-  return /^\s*accTitle\s*:\s*(.+?)\s*$/m.exec(source)?.[1] ?? 'Diagram'
+/** The diagram's accessible title (`accTitle: …`): its alt text and caption. */
+export function diagramTitle(source: string): string | undefined {
+  return /^\s*accTitle\s*:\s*(.+?)\s*$/m.exec(source)?.[1]
 }
 
 function rootTag(svg: string): RegExpExecArray {
@@ -93,17 +94,17 @@ export function diagramHtml(
 ): string {
   const hash = diagramHash(source)
   const file = join(diagramsDir, `${hash}.svg`)
-  let box = ''
   let size = ''
   if (existsSync(file)) {
     const { width, height } = svgSize(readFileSync(file, 'utf8'))
-    box = ` style="--diagram-width: ${width}px"`
     size = ` width="${width}" height="${height}"`
   } else if (strict) {
     throw new Error(`Diagram ${hash} in ${page} isn't rendered: run npm run diagrams`)
   }
-  const alt = parser.utils.escapeHtml(diagramTitle(source))
-  return `<div class="diagram"${box}><img src="/diagrams/${hash}.svg"${size} alt="${alt}" loading="lazy" decoding="async"></div>\n`
+  const caption = diagramTitle(source)
+  const alt = caption ?? 'Diagram'
+  const img = `<img src="/diagrams/${hash}.svg"${size} alt="${escapeAttr(alt)}" loading="lazy" decoding="async">`
+  return figureHtml({ img, alt, caption, block: true })
 }
 
 interface Block {

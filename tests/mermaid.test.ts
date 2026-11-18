@@ -101,7 +101,7 @@ describe('diagramTitle', () => {
     expect(diagramTitle('flowchart LR\n  accTitle: Create a short URL \n  A --> B\n')).toBe(
       'Create a short URL',
     )
-    expect(diagramTitle('flowchart LR\n  A --> B\n')).toBe('Diagram')
+    expect(diagramTitle('flowchart LR\n  A --> B\n')).toBeUndefined()
   })
 })
 
@@ -136,15 +136,34 @@ describe('diagramHtml', () => {
     rmSync(diagramsDir, { recursive: true, force: true })
   })
 
-  it('renders an image with the size from the SVG and an escaped alt', () => {
+  it('renders a figure: sized image, zoom button and the accTitle as an escaped caption', () => {
     const hash = diagramHash(source)
     writeFileSync(
       join(diagramsDir, `${hash}.svg`),
       '<svg width="300" height="120" viewBox="0 0 300 120"></svg>',
     )
-    expect(diagramHtml(source, { diagramsDir, page, strict: true })).toBe(
-      `<div class="diagram" style="--diagram-width: 300px"><img src="/diagrams/${hash}.svg" width="300" height="120" alt="A &quot;quoted&quot; &lt;title&gt;" loading="lazy" decoding="async"></div>\n`,
+    const html = diagramHtml(source, { diagramsDir, page, strict: true })
+    const title = 'A &quot;quoted&quot; &lt;title&gt;'
+    expect(html).toMatch(/^<figure class="figure diagram"><img /)
+    expect(html).toContain(
+      `<img src="/diagrams/${hash}.svg" width="300" height="120" alt="${title}" loading="lazy" decoding="async">`,
     )
+    expect(html).toContain(`aria-label="Enlarge: ${title}"`)
+    expect(html).toMatch(
+      new RegExp(`<figcaption class="figure-caption" v-pre>${title}</figcaption></figure>\\n$`),
+    )
+  })
+
+  it('has no caption and a plain alt without an accTitle', () => {
+    const plain = 'flowchart LR\n  A --> B\n'
+    writeFileSync(
+      join(diagramsDir, `${diagramHash(plain)}.svg`),
+      '<svg width="1" height="1"></svg>',
+    )
+    const html = diagramHtml(plain, { diagramsDir, page, strict: true })
+    expect(html).toContain('alt="Diagram"')
+    expect(html).toContain('aria-label="Enlarge: Diagram"')
+    expect(html).not.toContain('figcaption')
   })
 
   it('fails the build when the SVG is missing', () => {

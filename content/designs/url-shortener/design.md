@@ -238,4 +238,4 @@ invalidation), and a full analytics pipeline (Kafka → Flink → ClickHouse).
 The editable source is the [Excalidraw file](https://github.com/meghsohor/system-designs/blob/main/content/designs/url-shortener/url_shortener_system_design.excalidraw).
 After editing it, export it as SVG over the image below.
 
-<img src="./url_shortener_system_design.svg" alt="System Design: URL Shortener - diagram" />
+![URL Shortener system design diagram](./url_shortener_system_design.svg "The whole design in one picture")

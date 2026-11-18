@@ -13,6 +13,7 @@ import {
   summary,
 } from './lib/mermaid.ts'
 import { buildNav, buildSidebar } from './lib/sidebar.ts'
+import { figureHtml, localSvgBaseWidth, markFigures } from './lib/figure.ts'
 import { slugify } from './lib/slug.ts'
 
 export interface ThemeConfig extends DefaultTheme.Config {
@@ -123,6 +124,35 @@ export default defineConfigWithTheme<ThemeConfig>({
         return fence
           ? fence(tokens, idx, options, env, self)
           : self.renderToken(tokens, idx, options)
+      }
+
+      // An image alone in a real paragraph (not a table cell, heading, tight list item or
+      // link) becomes a figure: caption from its title, and a zoom button.
+      // Last, so attribute syntax like {.wide} has already been taken off the image.
+      md.core.ruler.push('book-figures', (state) => markFigures(state.tokens))
+      const image = md.renderer.rules.image
+      md.renderer.rules.image = (tokens, idx, options, env, self) => {
+        const token = tokens[idx]
+        const render = () =>
+          image ? image(tokens, idx, options, env, self) : self.renderToken(tokens, idx, options)
+        if (!token?.meta?.figure) return render()
+        const caption = token.attrGet('title') || undefined
+        // The caption shows under the picture; a title tooltip would repeat it.
+        token.attrs = token.attrs?.filter(([name]) => name !== 'title') ?? null
+        const base = localSvgBaseWidth(token.attrGet('src') ?? '', {
+          contentDir,
+          page: env.relativePath,
+        })
+        if (base) token.attrSet('data-base-width', String(base))
+        const alt = self.renderInlineAsText(token.children ?? [], options, env)
+        return figureHtml({ img: render(), alt, caption, block: false })
+      }
+
+      // VitePress titles GitHub alerts in capitals and ignores label options for them.
+      md.renderer.rules.github_alert_open = (tokens, idx) => {
+        const { title, type } = tokens[idx]?.meta as { title: string; type: string }
+        const label = title === type.toUpperCase() ? title[0] + title.slice(1).toLowerCase() : title
+        return `<div class="${type} custom-block github-alert"><p class="custom-block-title">${md.utils.escapeHtml(label)}</p>\n`
       }
     },
   },

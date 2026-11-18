@@ -33,8 +33,16 @@ System design interview notes, published as an offline-first ebook at https://me
 - A page with nothing after its title shows as "Coming soon" and doesn't count towards progress.
 - Use relative `.md` links so they work on GitHub and on the site. Heading anchors use GitHub's slugs.
 - Name links after what the reader gets, never a file path: `[Full guide to requirements →](02-requirements.md)`.
-- Mermaid diagrams are ` ```mermaid ` blocks; the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block to give the image alt text.
-- Images use `./` paths. Excalidraw diagrams keep the `.excalidraw` source next to the exported `.svg` (no embedded scene); link the source by its GitHub URL, since it isn't part of the site.
+- Mermaid diagrams are ` ```mermaid ` blocks; the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block: it becomes the image's alt text and caption.
+- Images use markdown syntax with `./` paths, alone in their paragraph: `![What it shows](./x.svg "Caption")`. The title becomes the caption. Raw `<img>` tags get no caption or zoom button.
+- Diagrams and images fit the column and get a zoom button that opens them in a popup.
+- Callouts use GitHub alert syntax, so they work on GitHub too. Put the marker alone on the first line:
+  - `> [!NOTE]` background or a side fact
+  - `> [!TIP]` advice for the interview
+  - `> [!IMPORTANT]` something not to miss
+  - `> [!WARNING]` a common mistake
+  - `> [!CAUTION]` something that breaks things
+  Don't use VitePress `::: tip` containers; GitHub shows them as plain text. Excalidraw diagrams keep the `.excalidraw` source next to the exported `.svg` (no embedded scene); link the source by its GitHub URL, since it isn't part of the site.
 - Prettier never touches `.md` files.
 
 ## Conventions
