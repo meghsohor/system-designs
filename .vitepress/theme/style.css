@@ -368,3 +368,27 @@ html:has(.zoom-dialog[open]) {
 .VPDoc .aside-content {
   padding-bottom: 12px;
 }
+
+/* A thin progress bar: the page panel and the home page cards. */
+.book-bar {
+  display: block;
+  width: 100%;
+  height: var(--book-bar-height, 4px);
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: var(--vp-c-default-soft);
+  overflow: hidden;
+}
+
+.book-bar::-webkit-progress-bar {
+  background: var(--vp-c-default-soft);
+}
+
+.book-bar::-webkit-progress-value {
+  background: var(--vp-c-brand-1);
+}
+
+.book-bar::-moz-progress-bar {
+  background: var(--vp-c-brand-1);
+}

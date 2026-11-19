@@ -72,7 +72,7 @@ function reset() {
       <span>This page</span>
       <span class="value">{{ readLabel }}</span>
     </p>
-    <progress class="bar" max="1" :value="barValue" aria-label="This page, read" />
+    <progress class="book-bar" max="1" :value="barValue" aria-label="This page, read" />
     <p v-if="quizPath" class="row quiz">
       <span>Quiz</span>
       <span class="value">
@@ -159,28 +159,6 @@ function reset() {
   color: var(--vp-c-text-2);
   font-weight: 500;
   text-align: right;
-}
-
-.bar {
-  width: 100%;
-  height: 4px;
-  border: 0;
-  border-radius: 2px;
-  appearance: none;
-  background: var(--vp-c-default-soft);
-  overflow: hidden;
-}
-
-.bar::-webkit-progress-bar {
-  background: var(--vp-c-default-soft);
-}
-
-.bar::-webkit-progress-value {
-  background: var(--vp-c-brand-1);
-}
-
-.bar::-moz-progress-bar {
-  background: var(--vp-c-brand-1);
 }
 
 .note {
