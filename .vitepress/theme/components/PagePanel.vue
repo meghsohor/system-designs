@@ -84,23 +84,31 @@ function reset() {
       </span>
     </p>
     <p v-if="note" class="note">{{ note }}</p>
-    <button v-if="entry || quiz" ref="resetButton" type="button" class="reset" @click="reset">
-      <svg
-        viewBox="0 0 24 24"
-        width="15"
-        height="15"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        aria-hidden="true"
+    <div class="actions">
+      <button
+        v-if="entry || quiz"
+        ref="resetButton"
+        type="button"
+        class="action reset"
+        @click="reset"
       >
-        <path d="M3 12a9 9 0 1 0 3-6.7" />
-        <path d="M3 4v5h5" />
-      </svg>
-      Reset this page
-    </button>
+        <svg
+          viewBox="0 0 24 24"
+          width="15"
+          height="15"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M3 12a9 9 0 1 0 3-6.7" />
+          <path d="M3 4v5h5" />
+        </svg>
+        Reset this page
+      </button>
+    </div>
   </section>
 </template>
 
@@ -180,13 +188,18 @@ function reset() {
   color: var(--vp-c-text-2);
 }
 
-.reset {
-  align-self: flex-start;
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.action {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   min-height: 44px;
-  margin-top: 4px;
   padding: 0 12px 0 10px;
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;
@@ -195,12 +208,12 @@ function reset() {
   font-weight: 600;
 }
 
-.reset:hover {
+.action:hover {
   border-color: var(--vp-c-brand-1);
   color: var(--vp-c-brand-1);
 }
 
-.reset:focus-visible {
+.action:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
 }

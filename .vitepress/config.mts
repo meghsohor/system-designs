@@ -131,18 +131,6 @@ export default defineConfigWithTheme<ThemeConfig>({
       // link) becomes a figure: caption from its title, and a zoom button.
       // Last, so attribute syntax like {.wide} has already been taken off the image.
       md.core.ruler.push('book-figures', (state) => markFigures(state.tokens))
-
-      // Written pages get their actions (Mark as done, …) right under the title.
-      md.core.ruler.push('book-page-actions', (state) => {
-        const path = (state.env as { relativePath?: string }).relativePath
-        if (!path || kindOf(path, catalog) !== 'written') return
-        const open = state.tokens.findIndex((t) => t.type === 'heading_open' && t.tag === 'h1')
-        const close = state.tokens.findIndex((t, i) => i > open && t.type === 'heading_close')
-        if (open === -1 || close === -1) return
-        const actions = new state.Token('html_block', '', 0)
-        actions.content = '<PageActions />\n'
-        state.tokens.splice(close + 1, 0, actions)
-      })
       const image = md.renderer.rules.image
       md.renderer.rules.image = (tokens, idx, options, env, self) => {
         const token = tokens[idx]
