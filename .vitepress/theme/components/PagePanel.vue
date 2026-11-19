@@ -114,8 +114,8 @@ function reset() {
 }
 
 .page-panel.aside {
-  margin-top: 28px;
-  padding-top: 20px;
+  margin-top: 20px;
+  padding-top: 16px;
   border-top: 1px solid var(--vp-c-divider);
 }
 

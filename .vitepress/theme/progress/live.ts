@@ -9,3 +9,12 @@ export const liveFraction = ref<number>()
 
 /** Ids of the headings whose sections the reader has finished. */
 export const readHeadings = shallowRef<ReadonlySet<string>>(new Set())
+
+/** The section the reader is in, after the sections that contain it: ['h2-id', 'h3-id']. */
+export const currentHeadings = shallowRef<readonly string[]>([])
+
+/** A section the reader jumped to from the outline; it stays current until they scroll. */
+export const pinnedHeading = ref<string>()
+
+/** True on a written page once the tracker has measured it; the outline only shows progress then. */
+export const tracking = ref(false)

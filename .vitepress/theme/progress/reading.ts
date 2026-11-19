@@ -90,3 +90,31 @@ export function readSections(headings: HeadingPosition[], line: number, atEnd: b
     })
     .map((h) => h.id)
 }
+
+/**
+ * The section the reader is in, after the sections that contain it (an h2, then its h3): the
+ * clicked one while `pinned`, otherwise the last heading that has reached `line`. None at the
+ * very top, or at the end when nothing is pinned.
+ */
+export function currentPath(
+  headings: HeadingPosition[],
+  line: number,
+  atEnd: boolean,
+  pinned?: string,
+): string[] {
+  let index = -1
+  if (pinned !== undefined) index = headings.findIndex((h) => h.id === pinned)
+  else if (!atEnd) headings.forEach((h, i) => h.top <= line && (index = i))
+  const current = headings[index]
+  if (!current) return []
+  const path = [current.id]
+  let level = current.level
+  for (let i = index - 1; i >= 0; i--) {
+    const h = headings[i]
+    if (h && h.level < level) {
+      path.unshift(h.id)
+      level = h.level
+    }
+  }
+  return path
+}

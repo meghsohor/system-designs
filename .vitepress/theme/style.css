@@ -297,23 +297,19 @@ html:has(.zoom-dialog[open]) {
   --book-alert-bg: rgba(248, 113, 113, 0.1);
 }
 
-/* Read sections in the right-column outline: a line fills its left edge down to the last one
-   (ReadingTracker sets the two variables). The active section keeps VitePress's own marker. */
-.VPDocAsideOutline .content::before {
-  content: '';
-  position: absolute;
-  left: -1px;
-  top: var(--book-read-from, 0px);
-  width: 2px;
-  height: calc(var(--book-read-to, 0px) - var(--book-read-from, 0px));
-  border-radius: 2px;
-  background: var(--vp-c-brand-1);
-  opacity: 0.45;
-  transition: height 0.25s;
+/* The outline draws its own circles and line (VPDocOutlineItem.vue), so VitePress's marker and
+   left border would double them up. */
+.VPDocAsideOutline .outline-marker {
+  display: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .VPDocAsideOutline .content::before {
-    transition: none;
-  }
+.VPDocAsideOutline .content {
+  border-left: 0;
+  padding-left: 0;
+}
+
+/* VitePress leaves 32 px empty under the right column. With the outline and the page panel the
+   column often just fills the window, and that gap became the only thing to scroll to. */
+.VPDoc .aside-content {
+  padding-bottom: 12px;
 }

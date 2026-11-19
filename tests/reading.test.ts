@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  currentPath,
   DWELL_MS,
   nextStatus,
   readFraction,
@@ -95,5 +96,37 @@ describe('readSections', () => {
   it('never ticks the last section until the end is in view', () => {
     const last = headings.map((h, i) => ({ ...h, top: -2000 + i * 100 }))
     expect(readSections(last, 80, false)).toEqual(['a', 'a1', 'a2', 'b'])
+  })
+})
+
+describe('currentPath', () => {
+  const headings = [
+    { id: 'a', level: 2, top: -400 },
+    { id: 'a1', level: 3, top: -200 },
+    { id: 'a2', level: 3, top: 40 },
+    { id: 'b', level: 2, top: 500 },
+  ]
+
+  it('is the section in view after the sections that contain it', () => {
+    expect(currentPath(headings, 80, false)).toEqual(['a', 'a2'])
+    const atB = headings.map((h) => (h.id === 'b' ? { ...h, top: 60 } : h))
+    expect(currentPath(atB, 80, false)).toEqual(['b'])
+  })
+
+  it('is empty at the very top and at the end', () => {
+    expect(
+      currentPath(
+        headings.map((h) => ({ ...h, top: h.top + 600 })),
+        80,
+        false,
+      ),
+    ).toEqual([])
+    expect(currentPath(headings, 80, true)).toEqual([])
+  })
+
+  it('follows a clicked section, even one that can never scroll up to the line', () => {
+    expect(currentPath(headings, 80, false, 'b')).toEqual(['b'])
+    expect(currentPath(headings, 80, true, 'a1')).toEqual(['a', 'a1'])
+    expect(currentPath(headings, 80, false, 'gone')).toEqual([])
   })
 })

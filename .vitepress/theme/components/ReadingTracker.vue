@@ -2,10 +2,17 @@
 // Watches the reader on written pages: marks the page in progress or done, saves the place,
 // resumes it, and publishes where the reader is for the "On this page" ring and ticks. It draws
 // nothing itself.
-import { useData } from 'vitepress'
+import { getScrollOffset, useData } from 'vitepress'
 import { nextTick, onBeforeUnmount, onMounted, watch } from 'vue'
-import { liveFraction, readHeadings } from '../progress/live.ts'
 import {
+  currentHeadings,
+  liveFraction,
+  pinnedHeading,
+  readHeadings,
+  tracking,
+} from '../progress/live.ts'
+import {
+  currentPath,
   DWELL_MS,
   nextStatus,
   readFraction,
@@ -13,6 +20,7 @@ import {
   scrollFor,
   shouldResume,
 } from '../progress/reading.ts'
+import { isJumping, lastLanding } from '../progress/jump.ts'
 import { pausedPath, useProgress } from '../progress/useProgress.ts'
 import { showToast } from '../toast.ts'
 
@@ -47,42 +55,36 @@ function geometry() {
   }
 }
 
-// Just under whichever header stays on screen: the "On this page" bar below 1280 px, else the nav.
-function headerBottom(): number {
-  const local = document.querySelector<HTMLElement>('.VPLocalNav')
-  const header =
-    local && getComputedStyle(local).display !== 'none' ? local : document.querySelector('.VPNav')
-  return Math.max(header?.getBoundingClientRect().bottom ?? 0, 0)
-}
-
 function updateSections() {
   const headings = [...(content()?.querySelectorAll<HTMLElement>('h2[id], h3[id]') ?? [])].map(
     (h) => ({ id: h.id, level: Number(h.tagName[1]), top: h.getBoundingClientRect().top }),
   )
-  const read = readSections(headings, headerBottom() + 24, !fits && fraction >= 0.995)
+  // Where VitePress lands a heading (search results, # links, a #hash in the URL), so a
+  // heading it jumped to is always the current one.
+  const line = getScrollOffset() + 1
+  const atEnd = !fits && fraction >= 0.995
+  const path = currentPath(headings, line, atEnd, pinnedHeading.value)
+  if (path.join() !== currentHeadings.value.join()) currentHeadings.value = path
+  const read = readSections(headings, line, atEnd)
   const current = readHeadings.value
   if (read.length !== current.size || read.some((id) => !current.has(id))) {
     readHeadings.value = new Set(read)
   }
 }
 
-// From 1280 px, a line down the outline's left edge to the end of the last read section.
-function paintOutlineLine() {
-  const outline = document.querySelector<HTMLElement>('.VPDocAsideOutline .content')
-  if (!outline) return
-  const links = [...outline.querySelectorAll<HTMLElement>('.outline-link')]
-  const lastRead = links.filter((link) => link.parentElement?.classList.contains('read')).at(-1)
-  const top = outline.getBoundingClientRect().top
-  const from = links[0] ? links[0].getBoundingClientRect().top - top : 0
-  const to = lastRead ? lastRead.getBoundingClientRect().bottom - top : from
-  outline.style.setProperty('--book-read-from', `${Math.round(from)}px`)
-  outline.style.setProperty('--book-read-to', `${Math.round(to)}px`)
-}
-
-watch(readHeadings, () => nextTick(paintOutlineLine))
+// After "Reset this page" automatic changes pause, so a page reset at its end isn't marked done
+// again on the spot. They resume once the reader has scrolled 10% of the page away from there.
+let pausedAt = 0
+watch(pausedPath, (paused) => {
+  if (paused && paused === path) pausedAt = fraction
+})
 
 function evaluate() {
-  if (!active || pausedPath.value === path) return
+  if (!active) return
+  if (pausedPath.value === path) {
+    if (Math.abs(fraction - pausedAt) < 0.1) return
+    pausedPath.value = undefined
+  }
   const elapsed = dwellReached ? Math.max(Date.now() - startedAt, DWELL_MS) : Date.now() - startedAt
   const status = nextStatus({ fraction, fits, elapsed, userScrolled })
   if (status === 'done') store.markDone(path)
@@ -110,8 +112,8 @@ function measure() {
   ;({ fraction, fits } = readFraction(g))
   // A page that fits the screen has no "% read" worth showing.
   liveFraction.value = fits ? undefined : fraction
+  tracking.value = true
   updateSections()
-  paintOutlineLine()
   evaluate()
   save()
 }
@@ -120,8 +122,19 @@ const schedule = () => {
   if (!frame) frame = requestAnimationFrame(measure)
 }
 
+function unpin() {
+  if (!pinnedHeading.value) return
+  pinnedHeading.value = undefined
+  schedule()
+}
+
 function onScroll() {
   if (Date.now() > ignoreScrollUntil) userScrolled = true
+  // Scrolled away from a section picked in the outline, by any means (scrollbar, find, …).
+  const landed = lastLanding()
+  if (pinnedHeading.value && !isJumping() && landed !== undefined) {
+    if (Math.abs(window.scrollY - landed) > 4) unpin()
+  }
   schedule()
 }
 
@@ -133,6 +146,8 @@ function onInput(event: Event) {
   if (event instanceof KeyboardEvent && !SCROLL_KEYS.has(event.key)) return
   if (event.target instanceof Element && event.target.closest(ELSEWHERE)) return
   userScrolled = true
+  // A section picked from the outline stays current until the reader scrolls on their own.
+  unpin()
 }
 
 // Images without a size would move the saved place, so wait for them (up to 3 s).
@@ -177,6 +192,8 @@ function leave() {
   clearTimeout(saveTimer)
   active = false
   liveFraction.value = undefined
+  pinnedHeading.value = undefined
+  currentHeadings.value = []
   readHeadings.value = new Set()
 }
 
@@ -189,7 +206,11 @@ async function enter() {
   path = page.value.relativePath
   if (pausedPath.value !== path) pausedPath.value = undefined
   active = frontmatter.value.pageKind === 'written'
-  if (!active) return
+  // Left on between written pages, so the outline doesn't flash its plain look.
+  if (!active) {
+    tracking.value = false
+    return
+  }
   startedAt = Date.now()
   dwellReached = false
   userScrolled = false
@@ -207,6 +228,8 @@ async function enter() {
 
 const onPageHide = () => save(true)
 
+watch(pinnedHeading, () => schedule())
+
 // Save the page being left before the new one renders.
 watch(
   () => page.value.relativePath,
@@ -221,6 +244,9 @@ onMounted(() => {
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', schedule, { passive: true })
   window.addEventListener('pagehide', onPageHide)
+  // Back/forward and in-page # links move the page without a scroll gesture of the reader's.
+  window.addEventListener('popstate', unpin)
+  window.addEventListener('hashchange', unpin)
   for (const type of ['wheel', 'touchmove', 'keydown']) {
     window.addEventListener(type, onInput, { passive: true })
   }
@@ -232,6 +258,8 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', schedule)
   window.removeEventListener('pagehide', onPageHide)
+  window.removeEventListener('popstate', unpin)
+  window.removeEventListener('hashchange', unpin)
   for (const type of ['wheel', 'touchmove', 'keydown']) {
     window.removeEventListener(type, onInput)
   }

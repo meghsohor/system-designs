@@ -120,7 +120,7 @@ function scrollToTop() {
           </a>
         </div>
         <div class="outline">
-          <VPDocOutlineItem :headers="headers" />
+          <VPDocOutlineItem :headers="headers" :root="true" />
         </div>
       </div>
     </Transition>
@@ -220,7 +220,8 @@ function scrollToTop() {
 .outline {
   /* A grid item: without this, long titles widen the list past the screen. */
   min-width: 0;
-  padding: 8px 0;
+  padding: 8px 16px;
+  --book-outline-bg: var(--vp-c-bg-soft);
   background-color: var(--vp-c-bg-soft);
 }
 
