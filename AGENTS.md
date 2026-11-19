@@ -38,6 +38,7 @@ System design interview notes, published as an offline-first ebook at https://me
 - Diagrams for a design are drawn in Excalidraw. The `.excalidraw` source sits next to its exported `.svg` (export without the embedded scene); link the source by its GitHub URL, since it isn't part of the site.
   - Each part a note shows on its own is an Excalidraw frame, named after what it shows. Export each frame as SVG (select the frame → Export image, background off, 1×) next to the note, named after the frame in kebab case (`create-short-url.svg`), and use it as an image with a caption.
   - Excalidraw shows frame names and outlines in a full-drawing export; turn them off under View if they get in the way.
+  - Fill shapes with the Solid style (not hatching) in light shades: `#ffe3e3`, `#fff3bf`, `#d0ebff`, `#e3fafc`, `#ebfbee` (type the hex; the first three aren't in the picker). In dark mode the site inverts diagrams, and inverted hatching turns into dark stripes behind the labels.
 - Mermaid ` ```mermaid ` blocks still work for quick diagrams: the site shows them as pre-rendered SVGs, and GitHub renders the blocks itself. Add `accTitle: …` to a block: it becomes the image's alt text and caption.
 - Images use markdown syntax with `./` paths, alone in their paragraph: `![What it shows](./x.svg "Caption")`. The title becomes the caption. Raw `<img>` tags get no caption or zoom button.
 - Diagrams and images fit the column and get a zoom button that opens them in a popup.
