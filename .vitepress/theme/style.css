@@ -165,9 +165,8 @@
   font-size: calc(16px * var(--book-text-scale, 1));
 }
 
-/* Pictures sit in a tinted panel and fit inside it. Under each: the caption centred, the zoom
-   button on the right (an empty column of the same width on the left keeps the caption truly
-   centred). */
+/* Pictures sit in a tinted panel and fit inside it, with the zoom button in the panel's
+   bottom-right corner. The caption sits centred under the panel. */
 :root {
   --book-figure-bg: #f7f9fa;
   --book-figure-border: #e3e8ec;
@@ -181,9 +180,7 @@
 .vp-doc .figure {
   --book-figure-pad: clamp(12px, 3vw, 24px);
   display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
-  align-items: center;
-  column-gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
   margin: 24px 0 16px;
 }
 
@@ -191,17 +188,15 @@
    doesn't invert it. */
 .vp-doc .figure::before {
   content: '';
-  grid-column: 1 / -1;
-  grid-row: 1;
-  align-self: stretch;
+  grid-area: 1 / 1;
   border: 1px solid var(--book-figure-border);
   border-radius: 12px;
   background: var(--book-figure-bg);
 }
 
 .vp-doc .figure > img {
-  grid-column: 1 / -1;
-  grid-row: 1;
+  grid-area: 1 / 1;
+  align-self: center;
   justify-self: center;
   max-width: calc(100% - 2 * var(--book-figure-pad));
   height: auto;
@@ -210,32 +205,45 @@
 }
 
 .vp-doc .figure-caption {
-  grid-column: 2;
   grid-row: 2;
+  margin-top: 10px;
   color: var(--vp-c-text-2);
   text-align: center;
   font-size: calc(14px * var(--book-text-scale, 1));
   line-height: 1.5;
 }
 
+/* A 44 px tap target; the visible circle is 32 px, in the panel's colour, so the icon stays
+   readable where it overlaps a line or the corner of a shape. Positioned, so it stays above the
+   image, which the dark-mode filter lifts into its own layer. */
 .vp-doc .zoom-button {
-  grid-column: 3;
-  grid-row: 2;
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 1;
+  align-self: end;
+  justify-self: end;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
+  margin: 2px;
+  padding: 6px;
   border-radius: 50%;
+  background: var(--book-figure-bg) content-box;
   color: var(--vp-c-text-2);
 }
 
-.vp-doc .zoom-button:hover {
-  background: var(--vp-c-default-soft);
-  color: var(--vp-c-brand-1);
+/* Hover only with a mouse: after a tap, a touch screen would keep the tint on. */
+@media (hover: hover) {
+  .vp-doc .zoom-button:hover {
+    background-color: color-mix(in srgb, var(--vp-c-brand-1) 14%, var(--book-figure-bg));
+    color: var(--vp-c-brand-1);
+  }
 }
 
 .vp-doc .zoom-button:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: -2px;
 }
 
 /* Diagrams are drawn for a light page. */
