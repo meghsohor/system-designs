@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vitepress'
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { noteScrollbar } from '../scrollbar.ts'
 
 // Below 75% of natural size a diagram's labels are under 12 px; above 2× it only gets blurry.
 const READABLE = 0.75
@@ -40,6 +41,7 @@ function open(figure: Element) {
   // Clicking the picture focuses nothing, so focus goes back to the zoom button.
   opener = figure.querySelector<HTMLElement>('.zoom-button')
   width.value = undefined
+  noteScrollbar()
   dialog.value.showModal()
   // A cached image may not fire load again.
   void nextTick(fit)

@@ -4,6 +4,7 @@ import { computed, nextTick, ref } from 'vue'
 import type { CatalogPage, CatalogSection } from '../../lib/catalog.ts'
 import type { ThemeConfig } from '../../config.mts'
 import { useProgress } from '../progress/useProgress.ts'
+import { noteScrollbar } from '../scrollbar.ts'
 import { showToast } from '../toast.ts'
 
 const { theme } = useData<ThemeConfig>()
@@ -112,6 +113,11 @@ function resetQuiz(page: CatalogPage) {
   })
 }
 
+function openDialog() {
+  noteScrollbar()
+  dialog.value?.showModal()
+}
+
 function resetAll() {
   store.resetAll()
   dialog.value?.close()
@@ -211,12 +217,7 @@ function onDialogClick(event: MouseEvent) {
     </section>
 
     <template v-if="saved">
-      <button
-        v-if="hasSaved && !isNewer"
-        type="button"
-        class="reset-all"
-        @click="dialog?.showModal()"
-      >
+      <button v-if="hasSaved && !isNewer" type="button" class="reset-all" @click="openDialog">
         <svg
           width="18"
           height="18"

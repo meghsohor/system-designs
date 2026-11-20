@@ -274,10 +274,13 @@
 }
 
 /* The page behind a popup stays put. Keeping the scrollbar's space stops the column
-   reflowing, which would move the reader's place. */
+   reflowing, which would move the reader's place; `noteScrollbar()` says whether there was one. */
 html:has(.zoom-dialog[open]),
 html:has(.reset-dialog[open]) {
   overflow: hidden;
+}
+html.has-scrollbar:has(.zoom-dialog[open]),
+html.has-scrollbar:has(.reset-dialog[open]) {
   scrollbar-gutter: stable;
 }
 
