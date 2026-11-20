@@ -1,9 +1,17 @@
 import { existsSync, readFileSync, utimesSync } from 'node:fs'
-import { join } from 'node:path'
+import { join, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { Plugin } from 'vite'
 import { defineConfigWithTheme, type DefaultTheme } from 'vitepress'
-import { kindOf, loadCatalog, neighbours, type CatalogSection } from './lib/catalog.ts'
+import {
+  escapeHtml,
+  kindOf,
+  linkOf,
+  loadCatalog,
+  neighbours,
+  titleOf,
+  type CatalogSection,
+} from './lib/catalog.ts'
 import {
   diagramHash,
   diagramHtml,
@@ -17,6 +25,7 @@ import { figureHtml, localSvgBaseWidth, markFigures } from './lib/figure.ts'
 import { slugify } from './lib/slug.ts'
 import { textSizeScript } from './lib/text-size.ts'
 import { darkModeFallbackScript } from './lib/dark-mode.ts'
+import { parseQuiz } from './lib/quiz.ts'
 
 export interface ThemeConfig extends DefaultTheme.Config {
   catalog: CatalogSection[]
@@ -27,6 +36,22 @@ const contentDir = fileURLToPath(new URL('../content', import.meta.url))
 const configFile = fileURLToPath(import.meta.url)
 const diagramsDir = join(contentDir, 'public', 'diagrams')
 const catalog = loadCatalog(contentDir)
+const catalogPages = new Map(catalog.flatMap((s) => s.pages).map((p) => [p.path, p]))
+
+// A quiz page is only the quiz component, with the questions passed in. The catalog has
+// already checked the file, so the build has failed before this on a bad quiz.
+function quizHtml(src: string, quizPath: string): string {
+  const { quiz } = parseQuiz(src, quizPath)
+  const questions = quiz.questions.map(({ review, ...question }) => ({
+    ...question,
+    review: { text: review.text, link: linkOf(review.target) + (review.hash && `#${review.hash}`) },
+  }))
+  const props = escapeHtml(JSON.stringify({ title: quiz.title, questions })).replaceAll(
+    '"',
+    '&quot;',
+  )
+  return `<QuizRunner :quiz="${props}" />\n`
+}
 
 // The catalog is read once at startup. In dev, restart when a content change alters it.
 // Vite's server.restart() leaves VitePress's search index behind, so we touch this file
@@ -150,6 +175,23 @@ export default defineConfigWithTheme<ThemeConfig>({
         return figureHtml({ img: render(), alt, caption, block: false })
       }
 
+      // Quiz pages become the quiz; a design with a quiz gets its button under the title.
+      md.core.ruler.push('book-quiz', (state) => {
+        const path: string = state.env?.relativePath ?? ''
+        if (posix.basename(path) === 'quiz.md') {
+          const token = new state.Token('html_block', '', 0)
+          token.content = quizHtml(state.src, path)
+          state.tokens = [token]
+          return
+        }
+        if (!catalogPages.get(path)?.quiz) return
+        const titleEnd = state.tokens.findIndex((t) => t.type === 'heading_close' && t.tag === 'h1')
+        if (titleEnd === -1) return
+        const token = new state.Token('html_block', '', 0)
+        token.content = '<PageActions />\n'
+        state.tokens.splice(titleEnd + 1, 0, token)
+      })
+
       // VitePress titles GitHub alerts in capitals and ignores label options for them.
       md.renderer.rules.github_alert_open = (tokens, idx) => {
         const { title, type } = tokens[idx]?.meta as { title: string; type: string }
@@ -199,8 +241,14 @@ export default defineConfigWithTheme<ThemeConfig>({
       pageData.frontmatter.prev ??= prev ?? false
       pageData.frontmatter.next ??= next ?? false
     } else if (kind === 'quiz') {
-      pageData.frontmatter.prev = false
-      pageData.frontmatter.next = false
+      // The page has no markdown heading left to take the title from.
+      pageData.title = titleOf(readFileSync(join(contentDir, pageData.relativePath), 'utf8')) ?? ''
+      Object.assign(pageData.frontmatter, {
+        layout: 'page',
+        sidebar: false,
+        prev: false,
+        next: false,
+      })
     }
   },
 })

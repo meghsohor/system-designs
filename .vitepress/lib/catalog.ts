@@ -3,6 +3,7 @@
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, posix } from 'node:path'
 import MarkdownIt from 'markdown-it'
+import { checkReviewLinks, parseQuiz } from './quiz.ts'
 
 export type PageKind = 'written' | 'soon' | 'overview' | 'quiz' | 'app'
 
@@ -39,7 +40,10 @@ export interface CatalogPage {
   summary?: string
   kind: 'written' | 'soon'
   section: string
+  /** The design's quiz.md, when it has one. */
   quiz?: string
+  quizLink?: string
+  quizQuestions?: number
 }
 
 export interface CatalogSection {
@@ -211,6 +215,15 @@ export function loadCatalog(contentDir: string, sections = SECTIONS): CatalogSec
       const title = titleOf(src)
       if (!title) problems.push(`${link.target}: must start with a "# Title" line`)
       const quiz = posix.join(posix.dirname(link.target), 'quiz.md')
+      const hasQuiz = existsSync(join(contentDir, quiz))
+      let quizQuestions: number | undefined
+      if (hasQuiz) {
+        const parsed = parseQuiz(read(quiz), quiz)
+        const readPage = (path: string) =>
+          existsSync(join(contentDir, path)) ? read(path) : undefined
+        problems.push(...parsed.problems, ...checkReviewLinks(parsed.quiz, quiz, readPage))
+        quizQuestions = parsed.quiz.questions.length
+      }
       section.pages.push({
         path: link.target,
         link: linkOf(link.target),
@@ -219,7 +232,9 @@ export function loadCatalog(contentDir: string, sections = SECTIONS): CatalogSec
         summary: link.summary,
         kind: isComingSoon(src) ? 'soon' : 'written',
         section: def.id,
-        quiz: existsSync(join(contentDir, quiz)) ? quiz : undefined,
+        quiz: hasQuiz ? quiz : undefined,
+        quizLink: hasQuiz ? linkOf(quiz) : undefined,
+        quizQuestions,
       })
     })
 

@@ -190,6 +190,20 @@
   --book-danger-border: rgba(253, 186, 116, 0.35);
 }
 
+/* Quiz answers. Wrong ones in orange; right ones use the brand colour, and the tick on a
+   right one is dark in dark mode, where the brand colour is too light for white. */
+:root {
+  --book-wrong: #c2410c;
+  --book-wrong-soft: #fff4ed;
+  --book-on-right: #fff;
+}
+
+.dark {
+  --book-wrong: #ea580c;
+  --book-wrong-soft: rgba(251, 146, 60, 0.12);
+  --book-on-right: var(--vp-c-bg);
+}
+
 .vp-doc .figure {
   --book-figure-pad: clamp(12px, 3vw, 24px);
   display: grid;
@@ -284,8 +298,9 @@ html.has-scrollbar:has(.reset-dialog[open]) {
   scrollbar-gutter: stable;
 }
 
-/* Callouts: GitHub alert syntax (> [!TIP]) in the kind's colour, with an icon. */
-.vp-doc .custom-block.github-alert {
+/* Callouts: GitHub alert syntax (> [!TIP]) in the kind's colour, with an icon. The quiz's
+   feedback (.book-callouts) uses the same markup outside the note text. */
+:is(.vp-doc, .book-callouts) .custom-block.github-alert {
   border: 0;
   border-left: 4px solid var(--book-alert);
   border-radius: 0 8px 8px 0;
@@ -293,7 +308,7 @@ html.has-scrollbar:has(.reset-dialog[open]) {
   color: var(--vp-c-text-1);
 }
 
-.vp-doc .custom-block.github-alert .custom-block-title {
+:is(.vp-doc, .book-callouts) .custom-block.github-alert .custom-block-title {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -301,7 +316,7 @@ html.has-scrollbar:has(.reset-dialog[open]) {
   font-weight: 600;
 }
 
-.vp-doc .custom-block.github-alert .custom-block-title::before {
+:is(.vp-doc, .book-callouts) .custom-block.github-alert .custom-block-title::before {
   content: '';
   flex: none;
   width: 18px;
@@ -310,63 +325,68 @@ html.has-scrollbar:has(.reset-dialog[open]) {
   mask: var(--book-alert-icon) center / contain no-repeat;
 }
 
-.vp-doc .github-alert.note,
-.vp-doc .github-alert.info {
+:is(.vp-doc, .book-callouts) .github-alert.note,
+:is(.vp-doc, .book-callouts) .github-alert.info {
   --book-alert: #475569;
   --book-alert-bg: rgba(71, 85, 105, 0.08);
   --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E");
 }
 
-.vp-doc .github-alert.tip {
+:is(.vp-doc, .book-callouts) .github-alert.tip {
   --book-alert: #0e7490;
   --book-alert-bg: rgba(14, 116, 144, 0.08);
   --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z'/%3E%3C/svg%3E");
 }
 
-.vp-doc .github-alert.important {
+:is(.vp-doc, .book-callouts) .github-alert.important {
   --book-alert: #6d28d9;
   --book-alert-bg: rgba(109, 40, 217, 0.07);
   --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3Cpath d='M12 7v4M12 14h.01'/%3E%3C/svg%3E");
 }
 
-.vp-doc .github-alert.warning {
+:is(.vp-doc, .book-callouts) .github-alert.warning {
   --book-alert: #9a4a07;
   --book-alert-bg: rgba(217, 119, 6, 0.09);
   --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E");
 }
 
-.vp-doc .github-alert.caution,
-.vp-doc .github-alert.danger {
+:is(.vp-doc, .book-callouts) .github-alert.caution,
+:is(.vp-doc, .book-callouts) .github-alert.danger {
   --book-alert: #b91c1c;
   --book-alert-bg: rgba(220, 38, 38, 0.07);
   --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
 }
 
-.dark .vp-doc .github-alert.note,
-.dark .vp-doc .github-alert.info {
+.dark :is(.vp-doc, .book-callouts) .github-alert.note,
+.dark :is(.vp-doc, .book-callouts) .github-alert.info {
   --book-alert: #94a3b8;
   --book-alert-bg: rgba(148, 163, 184, 0.1);
 }
 
-.dark .vp-doc .github-alert.tip {
+.dark :is(.vp-doc, .book-callouts) .github-alert.tip {
   --book-alert: #22d3ee;
   --book-alert-bg: rgba(34, 211, 238, 0.09);
 }
 
-.dark .vp-doc .github-alert.important {
+.dark :is(.vp-doc, .book-callouts) .github-alert.important {
   --book-alert: #a78bfa;
   --book-alert-bg: rgba(167, 139, 250, 0.1);
 }
 
-.dark .vp-doc .github-alert.warning {
+.dark :is(.vp-doc, .book-callouts) .github-alert.warning {
   --book-alert: #fbbf24;
   --book-alert-bg: rgba(251, 191, 36, 0.09);
 }
 
-.dark .vp-doc .github-alert.caution,
-.dark .vp-doc .github-alert.danger {
+.dark :is(.vp-doc, .book-callouts) .github-alert.caution,
+.dark :is(.vp-doc, .book-callouts) .github-alert.danger {
   --book-alert: #f87171;
   --book-alert-bg: rgba(248, 113, 113, 0.1);
+}
+
+/* A right quiz answer: the Tip callout with a tick instead of the bulb. */
+.book-callouts .github-alert.tip.quiz-right {
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E");
 }
 
 /* The outline draws its own circles and line (VPDocOutlineItem.vue), so VitePress's marker and

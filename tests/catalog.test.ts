@@ -157,7 +157,10 @@ describe('loadCatalog', () => {
       '# Designs\n\n- [Shortener](short/design.md): links.\n- [Chat](chat/design.md)\n',
     )
     write('designs/short/design.md', '# Shortener\n\nText.\n')
-    write('designs/short/quiz.md', '# Quiz\n')
+    write(
+      'designs/short/quiz.md',
+      '# Quiz\n\n## Why?\n\n- [ ] A\n- [x] B\n\n> Because.\n\nReview: [Shortener](design.md#shortener)\n',
+    )
     write('designs/chat/design.md', '# Chat\n')
   }
 
@@ -172,6 +175,8 @@ describe('loadCatalog', () => {
         path: 'designs/short/design.md',
         kind: 'written',
         quiz: 'designs/short/quiz.md',
+        quizLink: '/designs/short/quiz',
+        quizQuestions: 1,
         summary: 'links.',
       },
       { path: 'designs/chat/design.md', kind: 'soon', quiz: undefined },
@@ -188,6 +193,17 @@ describe('loadCatalog', () => {
     write('designs/chat/design.md', 'Chat without a title\n')
     expect(() => loadCatalog(root, sections)).toThrowError(
       /links to a missing page: designs\/gone\/design\.md[\s\S]*chat\/design\.md: must start with[\s\S]*short\/design\.md: not linked/,
+    )
+  })
+
+  it('fails on an invalid quiz, naming the file and question', () => {
+    setup()
+    write(
+      'designs/short/quiz.md',
+      '# Quiz\n\n## Why?\n\n- [x] A\n\n> No.\n\nReview: [X](design.md#nope)\n',
+    )
+    expect(() => loadCatalog(root, sections)).toThrowError(
+      /quiz\.md: question 1 \("Why\?"\): needs at least 2 options[\s\S]*heading doesn't exist: designs\/short\/design\.md#nope/,
     )
   })
 
