@@ -154,8 +154,9 @@ put. At 6B links the keyspace is only ~0.2% full, so retries are rare, and at
 ### Deep dive 2: fast redirects and viral links
 
 - **Cache-aside in Redis** with an LRU policy. The cache TTL is the smaller of a
-  default (e.g. 24 h) and the time until `expires_at`, so expired links don't
-  keep redirecting.
+  default (e.g. 24 h) and the time until `expires_at`, so expired links leave
+  the cache. Each entry keeps `expires_at`, so the redirect checks it even on a
+  cache hit.
 - **Hot keys:** one viral link can send most of the traffic to one Redis
   shard. The redirect service keeps a small in-process cache with a short TTL
   (~60 s), which absorbs repeat hits before they reach Redis.
@@ -167,8 +168,8 @@ put. At 6B links the keyspace is only ~0.2% full, so retries are rare, and at
   a new alias works straight away.
 - **Signal:** cache hit rate above 90%, and redirect p99 under 100 ms.
 
-**Trade-off:** the in-process cache means an expired link can still redirect
-for up to 60 seconds. That's acceptable for this product.
+**Trade-off:** the in-process cache means a link disabled by the abuse scan
+can still redirect for up to 60 seconds. That's acceptable for this product.
 
 ### Deep dive 3: counting clicks without slowing redirects
 
@@ -190,7 +191,9 @@ few minutes" requirement.
 - **Expiry cleanup:** DynamoDB's TTL feature deletes expired rows, but
   deletion can lag by days. That's why the redirect also checks `expires_at`.
 - **Abuse:** rate limits at the gateway, a blocklist check on create, and an
-  async scan of new links that can disable a link later.
+  async scan of new links that can disable a link later. Disabling a link
+  deletes its Redis entry; the copies in the in-process caches run out within
+  60 seconds.
 - **Cost:** storage is small (~9 TB with replicas). Most of the cost is
   redirect servers and cache, and a high cache hit rate keeps the store small.
   Run in one region with replicas. Go multi-region only if a global latency
