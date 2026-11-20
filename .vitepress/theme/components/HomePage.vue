@@ -179,7 +179,7 @@ function sentence(text = ''): string {
       <div class="card stats">
         <h2 class="eyebrow">Your progress</h2>
         <p class="figures">
-          <span class="percent">{{ Math.round(overall * 100) }}%</span>
+          <span class="percent">{{ Math.floor(overall * 100) }}%</span>
           <span>
             {{ saved.summary.done }} of {{ saved.summary.total }} pages<template v-if="hasQuizzes">
               · {{ quizCount(quizzesTaken) }} taken</template
@@ -194,6 +194,9 @@ function sentence(text = ''): string {
           aria-label="All pages, done"
         />
         <p class="note">{{ savedNote }}</p>
+        <a class="more details" :href="withBase('/progress')">
+          Details and reset <span aria-hidden="true">→</span>
+        </a>
       </div>
     </section>
 
@@ -391,6 +394,17 @@ function sentence(text = ''): string {
   font-size: 14px;
   font-weight: 600;
   color: var(--vp-c-brand-1);
+}
+.details {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: 4px;
+  min-height: 32px;
+  text-decoration: none;
+}
+.details:hover {
+  text-decoration: underline;
 }
 
 .block {

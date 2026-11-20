@@ -177,6 +177,19 @@
   --book-figure-border: var(--vp-c-divider);
 }
 
+/* Buttons that delete saved progress. The filled one keeps white text in both modes. */
+:root {
+  --book-danger: #9a3412;
+  --book-danger-border: #f1c4b0;
+  --book-danger-fill: #b42318;
+  --book-danger-fill-hover: #912018;
+}
+
+.dark {
+  --book-danger: #fdba74;
+  --book-danger-border: rgba(253, 186, 116, 0.35);
+}
+
 .vp-doc .figure {
   --book-figure-pad: clamp(12px, 3vw, 24px);
   display: grid;
@@ -260,9 +273,10 @@
   filter: invert(93%) hue-rotate(180deg);
 }
 
-/* The page behind the zoom popup stays put. Keeping the scrollbar's space stops the column
+/* The page behind a popup stays put. Keeping the scrollbar's space stops the column
    reflowing, which would move the reader's place. */
-html:has(.zoom-dialog[open]) {
+html:has(.zoom-dialog[open]),
+html:has(.reset-dialog[open]) {
   overflow: hidden;
   scrollbar-gutter: stable;
 }

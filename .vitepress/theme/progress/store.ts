@@ -350,12 +350,16 @@ export function createProgressStore({
       })
     },
 
-    resetQuiz(quizPath: string) {
+    /** Clears one quiz score and returns what was saved, so "Undo" can put it back. */
+    resetQuiz(quizPath: string): QuizProgress | undefined {
+      let removed: QuizProgress | undefined
       update((d) => {
-        if (!d.quizzes[quizPath]) return false
+        removed = d.quizzes[quizPath]
+        if (!removed) return false
         delete d.quizzes[quizPath]
         return true
       })
+      return removed
     },
 
     /** Clears all reading progress and quiz scores. Settings are in other keys and stay. */

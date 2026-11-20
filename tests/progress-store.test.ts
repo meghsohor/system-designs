@@ -179,8 +179,27 @@ describe('quizzes', () => {
   it('resets one quiz', () => {
     const { store } = setup()
     store.recordQuiz(QUIZ, 10, 20)
-    store.resetQuiz(QUIZ)
+    const removed = store.resetQuiz(QUIZ)
     expect(store.getQuiz(QUIZ)).toBeUndefined()
+    expect(removed?.last.score).toBe(10)
+    expect(store.resetQuiz(QUIZ)).toBeUndefined()
+  })
+
+  it('undoes a quiz reset with what was saved then, even if another tab had saved since', () => {
+    const { store, saved, storage } = setup()
+    store.recordQuiz(QUIZ, 10, 20)
+    // Another tab records a better attempt before this tab's reset.
+    const other = saved()
+    other.quizzes[QUIZ] = {
+      ...other.quizzes[QUIZ],
+      last: { score: 19, total: 20, at: 'x' },
+      attempts: 2,
+    }
+    storage.setItem(PROGRESS_KEY, JSON.stringify(other))
+    const removed = store.resetQuiz(QUIZ)
+    store.restore({ path: DESIGN, quizPath: QUIZ, quiz: removed })
+    expect(store.getQuiz(QUIZ)?.last.score).toBe(19)
+    expect(store.getQuiz(QUIZ)?.attempts).toBe(2)
   })
 })
 
