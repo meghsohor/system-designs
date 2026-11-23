@@ -406,6 +406,12 @@ html.has-scrollbar:has(.reset-dialog[open]) {
   padding-bottom: 12px;
 }
 
+/* VitePress fades the bottom 32 px of the window over the right column; with the smaller gap
+   above, it covered the end of the page panel even when scrolled to the bottom. */
+.VPDoc .aside-curtain {
+  display: none;
+}
+
 /* A thin progress bar: the page panel and the home page cards. */
 .book-bar {
   display: block;
