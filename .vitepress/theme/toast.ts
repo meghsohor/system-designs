@@ -3,7 +3,7 @@ import { shallowRef } from 'vue'
 export interface Toast {
   message: string
   action?: { label: string; run: () => void }
-  /** Milliseconds before it hides on its own; hovering or focusing it pauses that. */
+  /** Milliseconds before it hides on its own (Infinity: never); hovering or focusing it pauses that. */
   duration: number
   /** Move keyboard focus to the action, e.g. when the button that caused it has disappeared. */
   focusAction?: boolean

@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, utimesSync } from 'node:fs'
 import { join, posix } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { withPwa } from '@vite-pwa/vitepress'
 import type { Plugin } from 'vite'
 import { defineConfigWithTheme, type DefaultTheme } from 'vitepress'
 import {
@@ -129,12 +130,16 @@ function diagramsOnSave(): Plugin {
   }
 }
 
-export default defineConfigWithTheme<ThemeConfig>({
+const TITLE = 'System Design Interview'
+const DESCRIPTION =
+  'A 45-minute system design interview framework, the concepts behind it, and worked designs. Works offline.'
+const BRAND = '#0e7490'
+
+const config = defineConfigWithTheme<ThemeConfig>({
   base: BASE,
   lang: 'en',
-  title: 'System Design Interview',
-  description:
-    'A 45-minute system design interview framework, the concepts behind it, and worked designs. Works offline.',
+  title: TITLE,
+  description: DESCRIPTION,
   srcDir: 'content',
   cleanUrls: true,
   lastUpdated: true,
@@ -216,6 +221,11 @@ export default defineConfigWithTheme<ThemeConfig>({
   },
   head: [
     ['link', { rel: 'icon', type: 'image/svg+xml', href: `${BASE}logo.svg` }],
+    ['link', { rel: 'apple-touch-icon', href: `${BASE}apple-touch-icon-180x180.png` }],
+    // Older iOS opens a Home Screen site in Safari without these; newer iOS reads the manifest.
+    ['meta', { name: 'apple-mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'mobile-web-app-capable', content: 'yes' }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: 'System Design' }],
     ['script', {}, textSizeScript()],
     ['script', {}, darkModeFallbackScript()],
   ],
@@ -255,4 +265,49 @@ export default defineConfigWithTheme<ThemeConfig>({
       })
     }
   },
+  pwa: {
+    // A new version waits until the reader presses Reload (see theme/pwa.ts).
+    registerType: 'prompt',
+    injectRegister: false,
+    // The plugin's default is relative to srcDir (content/), not to this folder.
+    outDir: fileURLToPath(new URL('./dist', import.meta.url)),
+    // The PNG glob below already has them.
+    includeManifestIcons: false,
+    manifest: {
+      id: BASE,
+      name: TITLE,
+      short_name: 'System Design',
+      description: DESCRIPTION,
+      lang: 'en',
+      start_url: BASE,
+      scope: BASE,
+      display: 'standalone',
+      theme_color: BRAND,
+      background_color: '#ffffff',
+      icons: [
+        { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
+        { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png' },
+        {
+          src: 'maskable-icon-512x512.png',
+          sizes: '512x512',
+          type: 'image/png',
+          purpose: 'maskable',
+        },
+      ],
+    },
+    workbox: {
+      // Every page, the search index, fonts and diagrams. Clean URLs map to their .html files.
+      // The plugin adds the manifest itself.
+      globPatterns: ['**/*.{html,js,css,woff2,svg,png}'],
+      // Unknown addresses go to the network, so files such as llms.txt are never answered with a page.
+      navigateFallback: null,
+      // The site uses no query strings, so a shared link with one still opens offline.
+      ignoreURLParametersMatching: [/.*/],
+      // The first install takes over the open page, so it works offline without a reload.
+      clientsClaim: true,
+      cleanupOutdatedCaches: true,
+    },
+  },
 })
+
+export default withPwa(config)

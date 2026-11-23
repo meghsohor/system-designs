@@ -1,16 +1,21 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import ComingSoon from './components/ComingSoon.vue'
 import ListenGlide from './components/ListenGlide.vue'
 import ListenPlayer from './components/ListenPlayer.vue'
+import OfflineBadge from './components/OfflineBadge.vue'
 import PagePanel from './components/PagePanel.vue'
 import ReadingTracker from './components/ReadingTracker.vue'
 import TextSize from './components/TextSize.vue'
 import TextSizeControls from './components/TextSizeControls.vue'
 import ToastMessage from './components/ToastMessage.vue'
 import ZoomDialog from './components/ZoomDialog.vue'
+import { initPwa } from './pwa.ts'
 
 const { Layout } = DefaultTheme
+
+onMounted(() => void initPwa())
 </script>
 
 <template>
@@ -27,12 +32,14 @@ const { Layout } = DefaultTheme
       <PagePanel placement="aside" />
     </template>
     <template #nav-bar-content-after>
+      <OfflineBadge place="bar" />
       <TextSize />
     </template>
     <template #nav-screen-content-after>
       <div class="text-size-menu">
         <TextSizeControls label-id="text-size-menu-label" />
       </div>
+      <OfflineBadge place="menu" />
     </template>
     <template #layout-bottom>
       <ZoomDialog />

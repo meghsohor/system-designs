@@ -11,7 +11,9 @@ let held = false
 function startTimer() {
   clearTimeout(timer)
   const toast = currentToast.value
-  if (toast && !held) timer = setTimeout(hideToast, toast.duration)
+  if (toast && !held && Number.isFinite(toast.duration)) {
+    timer = setTimeout(hideToast, toast.duration)
+  }
 }
 function hold() {
   held = true

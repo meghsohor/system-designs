@@ -98,6 +98,17 @@
   }
 }
 
+/* The offline badge comes from the slot after the theme toggle; ordering search and the links
+   first puts it between them and the toggle. */
+.VPNavBar .content-body > .search,
+.VPNavBar .content-body > .menu {
+  order: -2;
+}
+
+.VPNavBar .content-body:has(> .offline) > .appearance::before {
+  display: none;
+}
+
 /* Display font for page titles, section headings and the site name. */
 .vp-doc h1,
 .vp-doc h2,
