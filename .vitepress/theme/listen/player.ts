@@ -7,7 +7,6 @@ import { collectBlocks, rangeOf, type Block } from './blocks.ts'
 import { LISTEN_KEY, bookVoices, parseSettings, pickVoice } from './voices.ts'
 
 const HIGHLIGHT = 'listen-sentence'
-const CURRENT_CLASS = 'listen-current'
 // How long the player waits for the device to list its voices before saying there are none.
 const VOICE_WAIT_MS = 1500
 // After the reader scrolls, the player stops following for this long.
@@ -255,12 +254,9 @@ function finish() {
   clearHighlight()
 }
 
+/** Marks the sentence being read; ListenGlide.vue draws the box behind the block. */
 function highlight() {
   const current = block.value
-  document.querySelectorAll(`.${CURRENT_CLASS}`).forEach((el) => {
-    if (el !== current?.el) el.classList.remove(CURRENT_CLASS)
-  })
-  if (current?.tint) current.el.classList.add(CURRENT_CLASS)
   if (typeof CSS === 'undefined' || !('highlights' in CSS)) return
   const range = current && !current.table ? current.parts[part.value] : undefined
   const dom = current && range ? rangeOf(current, ...range) : undefined
@@ -269,7 +265,6 @@ function highlight() {
 }
 
 function clearHighlight() {
-  document.querySelectorAll(`.${CURRENT_CLASS}`).forEach((el) => el.classList.remove(CURRENT_CLASS))
   if (typeof CSS !== 'undefined' && 'highlights' in CSS) CSS.highlights.delete(HIGHLIGHT)
 }
 

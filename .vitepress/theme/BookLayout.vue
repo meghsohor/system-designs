@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import ComingSoon from './components/ComingSoon.vue'
+import ListenGlide from './components/ListenGlide.vue'
 import ListenPlayer from './components/ListenPlayer.vue'
 import PagePanel from './components/PagePanel.vue'
 import ReadingTracker from './components/ReadingTracker.vue'
@@ -19,6 +20,7 @@ const { Layout } = DefaultTheme
       <PagePanel placement="end" />
     </template>
     <template #doc-after>
+      <ListenGlide />
       <ListenPlayer />
     </template>
     <template #aside-outline-after>

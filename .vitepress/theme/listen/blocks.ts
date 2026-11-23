@@ -11,7 +11,8 @@ export interface Block {
   /** The heading this block sits under. */
   section: string
   table: boolean
-  /** Whether the whole element is tinted; headings and items with nested lists only get the sentence. */
+  /** Whether the box covers the whole element; for headings and items with a nested list it
+   * covers just their words. */
   tint: boolean
   /** The text nodes `text` came from, and where each character sits in them. */
   nodes: Text[]

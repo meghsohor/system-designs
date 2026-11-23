@@ -138,6 +138,10 @@ export default defineConfigWithTheme<ThemeConfig>({
   srcDir: 'content',
   cleanUrls: true,
   lastUpdated: true,
+  vue: {
+    // A browser element (styled select menus), not a Vue component.
+    template: { compilerOptions: { isCustomElement: (tag) => tag === 'selectedcontent' } },
+  },
   markdown: {
     anchor: { slugify },
     config(md) {

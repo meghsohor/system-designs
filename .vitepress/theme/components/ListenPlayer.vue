@@ -27,6 +27,10 @@ import { SPEEDS, voiceLabels } from '../listen/voices.ts'
 
 // The listening player: a floating bar under the text from 640 px, a bottom sheet on phones.
 const route = useRoute()
+// A <button> inside a <select> is the styled menu's face. Vue's template check predates styled
+// selects and warns about it; naming the tag at runtime skips that check.
+const TRIGGER = 'button'
+
 const root = ref<HTMLElement>()
 const playButton = ref<HTMLButtonElement>()
 
@@ -159,16 +163,31 @@ onBeforeUnmount(() => {
       :value="ended ? blocks.length : index + 1"
     />
 
-    <select class="speed" aria-label="Speed" :value="speed" :disabled="noVoices" @change="onSpeed">
+    <!-- Where the browser can style a select, the trigger button is what shows; others ignore it. -->
+    <select
+      class="speed chip"
+      aria-label="Speed"
+      :value="speed"
+      :disabled="noVoices"
+      @change="onSpeed"
+    >
+      <component :is="TRIGGER" type="button" class="trigger"><selectedcontent /></component>
       <option v-for="s in SPEEDS" :key="s" :value="s">{{ s }}×</option>
     </select>
 
-    <span class="voice">
+    <span class="voice chip">
       <svg class="mic" viewBox="0 0 24 24" aria-hidden="true">
         <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
         <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
       </svg>
       <select aria-label="Voice" :value="voice?.voiceURI" :disabled="noVoices" @change="onVoice">
+        <component :is="TRIGGER" type="button" class="trigger">
+          <svg class="mic" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z" />
+            <path d="M19 11a7 7 0 0 1-14 0M12 18v3" />
+          </svg>
+          <selectedcontent />
+        </component>
         <option v-if="noVoices" value="">No voices</option>
         <optgroup v-if="localVoices.length" label="On this device">
           <option v-for="v in localVoices" :key="v.voiceURI" :value="v.voiceURI">
@@ -374,21 +393,40 @@ select {
   color: var(--vp-c-text-1);
 }
 
+.chip {
+  box-sizing: border-box;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--listen-chip);
+  box-shadow:
+    inset 0 1px 0 var(--listen-chip-edge),
+    0 1px 2px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.chip:not(:disabled, :has(select:disabled)):hover {
+  background: var(--listen-chip-hover);
+}
+
 .speed {
   grid-area: speed;
   width: 56px;
-  height: 44px;
   padding: 0;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
   appearance: none;
-  background: transparent;
+  background: var(--vp-c-brand-soft);
+  color: var(--vp-c-brand-1);
   /* 16 px, or iOS zooms the page when the menu opens. */
   font-size: 16px;
   font-weight: 600;
+  font-variant-numeric: tabular-nums;
   text-align: center;
   text-align-last: center;
-  cursor: pointer;
+}
+
+.speed:not(:disabled):hover {
+  background: color-mix(in srgb, var(--vp-c-brand-1) 22%, transparent);
 }
 
 .voice {
@@ -397,10 +435,6 @@ select {
   display: grid;
   place-items: center;
   width: 56px;
-  height: 44px;
-  box-sizing: border-box;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
 }
 
 .voice svg {
@@ -423,11 +457,14 @@ select {
   cursor: pointer;
 }
 
-.voice:has(select:disabled) {
+.voice:has(select:disabled),
+.speed:disabled {
   opacity: 0.4;
+  cursor: default;
 }
 
-.voice .chevron {
+.voice .chevron,
+.trigger .mic {
   display: none;
 }
 
@@ -435,6 +472,169 @@ select {
 .speed:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
+}
+
+select:disabled {
+  cursor: default;
+}
+
+/* Firefox draws its own menu in the select's colours; keep the list solid and readable. */
+@supports not (appearance: base-select) {
+  option,
+  optgroup {
+    background: var(--listen-menu);
+    color: var(--vp-c-text-1);
+  }
+}
+
+/* Chrome, Edge and Safari 27 let the menus themselves be styled: a floating card with a tick on
+   the chosen item. Elsewhere the chips stay and the device opens its own menu. */
+@supports (appearance: base-select) {
+  .speed,
+  .voice select,
+  .speed::picker(select),
+  .voice select::picker(select) {
+    appearance: base-select;
+  }
+
+  .voice > .mic,
+  .voice > .chevron {
+    display: none;
+  }
+
+  .speed {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .voice select {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    opacity: 1;
+  }
+
+  .trigger {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: inherit;
+  }
+
+  .trigger .mic {
+    display: block;
+  }
+
+  .voice selectedcontent,
+  .speed::picker-icon,
+  .voice select::picker-icon {
+    display: none;
+  }
+
+  .speed::picker(select),
+  .voice select::picker(select) {
+    min-width: 200px;
+    margin: 8px 0;
+    padding: 6px;
+    border: 1px solid var(--vp-c-divider);
+    border-radius: 14px;
+    background: var(--listen-menu);
+    box-shadow: var(--listen-menu-shadow);
+    color: var(--vp-c-text-1);
+    opacity: 0;
+    translate: 0 6px;
+    transition:
+      opacity 0.16s ease,
+      translate 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+      overlay 0.18s allow-discrete,
+      display 0.18s allow-discrete;
+  }
+
+  .speed::picker(select) {
+    min-width: 120px;
+  }
+
+  /* Some devices list dozens of voices; the card scrolls instead of filling the window. */
+  .voice select::picker(select) {
+    max-height: min(420px, 60vh);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .speed:open::picker(select),
+  .voice select:open::picker(select) {
+    opacity: 1;
+    translate: 0 0;
+  }
+
+  @starting-style {
+    .speed:open::picker(select),
+    .voice select:open::picker(select) {
+      opacity: 0;
+      translate: 0 6px;
+    }
+  }
+
+  option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 40px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    color: var(--vp-c-text-1);
+    font-size: 14px;
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+  }
+
+  option:hover,
+  option:focus-visible {
+    background: var(--vp-c-brand-soft);
+  }
+
+  option:checked {
+    color: var(--vp-c-brand-1);
+    font-weight: 600;
+  }
+
+  option::checkmark {
+    order: 1;
+    margin-left: auto;
+    content: '';
+    width: 16px;
+    height: 16px;
+    background: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5 9-10'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  optgroup {
+    padding: 8px 10px 4px;
+    color: var(--vp-c-text-2);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  optgroup + optgroup {
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid var(--vp-c-divider);
+  }
+
+  optgroup option {
+    letter-spacing: 0;
+    text-transform: none;
+  }
 }
 
 /* From 640 px: a floating bar that stays under the text column. */
@@ -524,48 +724,91 @@ select {
     line-height: 1.35;
   }
 
+  .chip {
+    height: 36px;
+  }
+
   .speed {
     width: auto;
-    height: 36px;
-    padding: 0 10px;
-    border-color: var(--vp-c-divider);
-    border-radius: 8px;
-    background: var(--vp-c-bg-soft);
+    min-width: 56px;
+    padding: 0 12px;
     font-size: 13px;
   }
 
   .voice {
     width: auto;
-    max-width: 180px;
-    height: 36px;
-    border-radius: 8px;
-    background: var(--vp-c-bg-soft);
+    max-width: 190px;
   }
 
-  .voice .mic {
+  .voice > .mic {
     display: none;
   }
 
   .voice select {
     position: static;
     height: 100%;
-    padding: 0 26px 0 10px;
+    padding: 0 30px 0 14px;
     border: 0;
     appearance: none;
     background: transparent;
     opacity: 1;
     font-size: 13px;
-    font-weight: 500;
+    font-weight: 600;
     text-overflow: ellipsis;
   }
 
-  .voice .chevron {
+  .voice > .chevron {
     display: block;
     position: absolute;
-    right: 8px;
+    right: 11px;
     width: 14px;
     height: 14px;
+    color: var(--vp-c-text-2);
     pointer-events: none;
+  }
+
+  @supports (appearance: base-select) {
+    .voice select {
+      padding: 0 12px 0 14px;
+      appearance: base-select;
+    }
+
+    .voice > .chevron,
+    .trigger .mic {
+      display: none;
+    }
+
+    .voice selectedcontent {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .voice select::picker-icon {
+      display: block;
+      content: '';
+      width: 14px;
+      height: 14px;
+      margin-left: 6px;
+      background: var(--vp-c-text-2);
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+        center / contain no-repeat;
+      transition: rotate 0.2s;
+    }
+
+    .voice select:open::picker-icon {
+      rotate: 180deg;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .speed::picker(select),
+  .voice select::picker(select),
+  .voice select::picker-icon {
+    translate: none;
+    transition: none;
   }
 }
 </style>
