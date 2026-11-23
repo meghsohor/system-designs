@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DefaultTheme from 'vitepress/theme-without-fonts'
 import ComingSoon from './components/ComingSoon.vue'
+import ListenPlayer from './components/ListenPlayer.vue'
 import PagePanel from './components/PagePanel.vue'
 import ReadingTracker from './components/ReadingTracker.vue'
 import TextSize from './components/TextSize.vue'
@@ -16,6 +17,9 @@ const { Layout } = DefaultTheme
     <template #doc-footer-before>
       <ComingSoon />
       <PagePanel placement="end" />
+    </template>
+    <template #doc-after>
+      <ListenPlayer />
     </template>
     <template #aside-outline-after>
       <PagePanel placement="aside" />

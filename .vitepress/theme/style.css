@@ -429,3 +429,38 @@ html.has-scrollbar:has(.reset-dialog[open]) {
 .book-bar::-moz-progress-bar {
   background: var(--vp-c-brand-1);
 }
+
+/* Listening: the block being read, and its sentence where the browser supports highlights. */
+:root {
+  --listen-block: color-mix(in srgb, var(--vp-c-brand-1) 9%, var(--vp-c-bg));
+  --listen-sentence: color-mix(in srgb, var(--vp-c-brand-1) 24%, var(--vp-c-bg));
+}
+
+.dark {
+  --listen-block: color-mix(in srgb, var(--vp-c-brand-1) 12%, var(--vp-c-bg));
+  --listen-sentence: color-mix(in srgb, var(--vp-c-brand-1) 30%, var(--vp-c-bg));
+}
+
+/* Shadows widen the background without moving the text; list items also cover their marker. */
+.vp-doc .listen-current {
+  border-radius: 6px;
+  background: var(--listen-block);
+  box-shadow: 0 0 0 8px var(--listen-block);
+  transition: background-color 0.2s;
+}
+
+.vp-doc li.listen-current {
+  box-shadow:
+    0 0 0 8px var(--listen-block),
+    -20px 0 0 8px var(--listen-block);
+}
+
+::highlight(listen-sentence) {
+  background-color: var(--listen-sentence);
+  color: inherit;
+}
+
+/* The phone player covers the bottom of the screen, so the page gets that much more room. */
+.listen-sheet-open .VPDoc {
+  padding-bottom: calc(96px + var(--listen-player-space, 0px));
+}

@@ -175,7 +175,7 @@ export default defineConfigWithTheme<ThemeConfig>({
         return figureHtml({ img: render(), alt, caption, block: false })
       }
 
-      // Quiz pages become the quiz; a design with a quiz gets its button under the title.
+      // Quiz pages become the quiz; written pages get "Listen" (and a quiz button) under the title.
       md.core.ruler.push('book-quiz', (state) => {
         const path: string = state.env?.relativePath ?? ''
         if (posix.basename(path) === 'quiz.md') {
@@ -184,7 +184,7 @@ export default defineConfigWithTheme<ThemeConfig>({
           state.tokens = [token]
           return
         }
-        if (!catalogPages.get(path)?.quiz) return
+        if (catalogPages.get(path)?.kind !== 'written') return
         const titleEnd = state.tokens.findIndex((t) => t.type === 'heading_close' && t.tag === 'h1')
         if (titleEnd === -1) return
         const token = new state.Token('html_block', '', 0)

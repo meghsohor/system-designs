@@ -91,7 +91,7 @@ onBeforeUnmount(() => clearTimeout(timer))
 <style scoped>
 .toast {
   position: fixed;
-  inset: auto 16px 24px;
+  inset: auto 16px calc(24px + var(--listen-player-space, 0px));
   margin: 0 auto;
   width: fit-content;
   max-width: calc(100vw - 32px);
