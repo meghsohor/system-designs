@@ -201,6 +201,17 @@
   --book-danger-border: rgba(253, 186, 116, 0.35);
 }
 
+/* Filled grey buttons beside a brand one, such as "Copy page" next to "Listen". */
+:root {
+  --book-chip: #ebeef0;
+  --book-chip-hover: #e0e5e8;
+}
+
+.dark {
+  --book-chip: #2e3a47;
+  --book-chip-hover: #384655;
+}
+
 /* Quiz answers. Wrong ones in orange; right ones use the brand colour, and the tick on a
    right one is dark in dark mode, where the brand colour is too light for white. */
 :root {

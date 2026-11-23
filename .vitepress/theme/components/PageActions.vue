@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { useData, withBase } from 'vitepress'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import type { ThemeConfig } from '../../config.mts'
+import { mdCopyPath } from '../../lib/md-copy.ts'
 import { close, initListening, open, start, supported } from '../listen/player.ts'
 import { useProgress } from '../progress/useProgress.ts'
+import { showToast } from '../toast.ts'
 
-// Buttons under a written page's title: the quiz button on designs that have one, and "Listen".
+// Buttons under a written page's title: the quiz button on designs that have one, "Listen"
+// and "Copy page".
 const { page, theme } = useData<ThemeConfig>()
 const { loaded, track } = useProgress()
 const mounted = ref(false)
@@ -19,6 +22,34 @@ onMounted(() => {
   mounted.value = true
   initListening()
 })
+
+// The page's markdown, as AI agents get it; the service worker keeps a copy for offline use.
+const copied = ref(false)
+let copiedTimer: ReturnType<typeof setTimeout> | undefined
+onUnmounted(() => clearTimeout(copiedTimer))
+
+async function copyPage() {
+  if (!entry.value) return
+  const text = fetch(withBase('/' + mdCopyPath(entry.value.link))).then((response) => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    return response.text()
+  })
+  try {
+    // Safari only allows a copy during the click, so the clipboard waits for the download.
+    if (typeof ClipboardItem === 'function') {
+      const blob = text.then((t) => new Blob([t], { type: 'text/plain' }))
+      await navigator.clipboard.write([new ClipboardItem({ 'text/plain': blob })])
+    } else {
+      await navigator.clipboard.writeText(await text)
+    }
+  } catch {
+    showToast({ message: "Couldn't copy the page. Try again." })
+    return
+  }
+  copied.value = true
+  clearTimeout(copiedTimer)
+  copiedTimer = setTimeout(() => (copied.value = false), 2000)
+}
 </script>
 
 <template>
@@ -82,6 +113,47 @@ onMounted(() => {
       </svg>
       {{ open ? 'Listening' : 'Listen' }}
     </button>
+    <button
+      v-if="entry"
+      type="button"
+      class="copy-button"
+      title="Copy page as markdown"
+      @click="copyPage"
+    >
+      <svg
+        v-if="copied"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20 6 9 17l-5-5" />
+      </svg>
+      <svg
+        v-else
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="8" y="8" width="13" height="13" rx="2.5" />
+        <path d="M16 8V5.5A2.5 2.5 0 0 0 13.5 3h-8A2.5 2.5 0 0 0 3 5.5v8A2.5 2.5 0 0 0 5.5 16H8" />
+      </svg>
+      <span aria-live="polite">
+        <template v-if="copied">Copied</template>
+        <template v-else>Copy page<span class="visually-hidden"> as markdown</span></template>
+      </span>
+    </button>
   </div>
 </template>
 
@@ -99,7 +171,8 @@ onMounted(() => {
 }
 
 .quiz-button,
-.listen-button {
+.listen-button,
+.copy-button {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -133,8 +206,28 @@ onMounted(() => {
   background: color-mix(in srgb, var(--vp-c-brand-1) 20%, transparent);
 }
 
+.copy-button {
+  padding-inline: 14px;
+  color: var(--vp-c-text-1);
+  background: var(--book-chip);
+}
+
+.copy-button:hover {
+  background: var(--book-chip-hover);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 .quiz-button:focus-visible,
-.listen-button:focus-visible {
+.listen-button:focus-visible,
+.copy-button:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
 }

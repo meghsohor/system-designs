@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, utimesSync } from 'node:fs'
-import { join, posix } from 'node:path'
+import { existsSync, readdirSync, readFileSync, utimesSync } from 'node:fs'
+import { join, posix, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { withPwa } from '@vite-pwa/vitepress'
 import type { Plugin } from 'vite'
@@ -27,6 +27,9 @@ import { slugify } from './lib/slug.ts'
 import { textSizeScript } from './lib/text-size.ts'
 import { darkModeFallbackScript } from './lib/dark-mode.ts'
 import { parseQuiz } from './lib/quiz.ts'
+import { describePage, isIndexable, seoHead, type Site } from './lib/seo.ts'
+import { fixLlmsLinks, llmsToc } from './lib/llms.ts'
+import llmstxt from 'vitepress-plugin-llms'
 
 export interface ThemeConfig extends DefaultTheme.Config {
   catalog: CatalogSection[]
@@ -35,6 +38,7 @@ export interface ThemeConfig extends DefaultTheme.Config {
 const BASE = '/system-designs/'
 const contentDir = fileURLToPath(new URL('../content', import.meta.url))
 const configFile = fileURLToPath(import.meta.url)
+const outDir = fileURLToPath(new URL('./dist', import.meta.url))
 const diagramsDir = join(contentDir, 'public', 'diagrams')
 const catalog = loadCatalog(contentDir)
 const catalogPages = new Map(catalog.flatMap((s) => s.pages).map((p) => [p.path, p]))
@@ -134,11 +138,39 @@ const TITLE = 'System Design Interview'
 const DESCRIPTION =
   'A 45-minute system design interview framework, the concepts behind it, and worked designs. Works offline.'
 const BRAND = '#0e7490'
+const REPO_FILES = 'https://github.com/meghsohor/system-designs/blob/main/content'
+const SITE: Site = {
+  url: `https://meghsohor.github.io${BASE.slice(0, -1)}`,
+  name: TITLE,
+  description: DESCRIPTION,
+  image: {
+    path: 'og.png',
+    width: 1200,
+    height: 630,
+    alt: 'System Design Interview: the eight steps of a 45-minute interview, from Understand to Wrap-up',
+  },
+}
+// Written pages, section overviews and the home page, as sitemap URLs (no leading slash).
+const indexableUrls = new Set(
+  catalog
+    .flatMap((s) => [
+      ...s.pages.filter((p) => isIndexable(p.path, p.kind)).map((p) => p.link),
+      s.overviewLink,
+    ])
+    .concat('/')
+    .map((link) => link.slice(1)),
+)
+// Only written pages are offered to AI agents.
+const notForAgents = readdirSync(contentDir, { recursive: true, encoding: 'utf8' })
+  .map((file) => file.split(sep).join('/'))
+  .filter((path) => path.endsWith('.md') && !path.startsWith('public/'))
+  .filter((path) => kindOf(path, catalog) !== 'written')
 
 const config = defineConfigWithTheme<ThemeConfig>({
   base: BASE,
   lang: 'en',
   title: TITLE,
+  titleTemplate: `:title · ${TITLE}`,
   description: DESCRIPTION,
   srcDir: 'content',
   cleanUrls: true,
@@ -210,7 +242,18 @@ const config = defineConfigWithTheme<ThemeConfig>({
     },
   },
   vite: {
-    plugins: [catalogReload(), diagramsMode, diagramsOnSave()],
+    plugins: [
+      catalogReload(),
+      diagramsMode,
+      diagramsOnSave(),
+      llmstxt({
+        title: TITLE,
+        description: DESCRIPTION,
+        domain: 'https://meghsohor.github.io',
+        ignoreFiles: notForAgents,
+        customTemplateVariables: { toc: llmsToc(catalog, SITE.url) },
+      }),
+    ],
     resolve: {
       // Our copies of these VitePress components add progress marks; each file says what changed.
       alias: ['VPSidebarItem', 'VPDocOutlineItem', 'VPLocalNavOutlineDropdown'].map((name) => ({
@@ -247,9 +290,30 @@ const config = defineConfigWithTheme<ThemeConfig>({
       },
     },
   },
+  sitemap: {
+    hostname: SITE.url + '/',
+    transformItems: (items) => items.filter((item) => indexableUrls.has(item.url)),
+  },
+  // Before the service worker is made (withPwa runs this first), so it caches the fixed copies.
+  buildEnd() {
+    fixLlmsLinks(outDir, catalog, SITE.url, REPO_FILES)
+  },
+  transformHead({ pageData }) {
+    const { relativePath: path, title, description, lastUpdated } = pageData
+    const kind = kindOf(path, catalog)
+    return seoHead({ path, kind, title, description, lastUpdated }, SITE)
+  },
   transformPageData(pageData) {
     const kind = kindOf(pageData.relativePath, catalog)
     pageData.frontmatter.pageKind = kind
+    // The home page's title is the site name alone.
+    if (pageData.relativePath === 'index.md') pageData.titleTemplate = false
+    pageData.description ||=
+      describePage(
+        pageData.relativePath,
+        readFileSync(join(contentDir, pageData.relativePath), 'utf8'),
+        catalog,
+      ) ?? DESCRIPTION
     if (kind === 'written' || kind === 'soon' || kind === 'overview') {
       const { prev, next } = neighbours(pageData.relativePath, catalog)
       pageData.frontmatter.prev ??= prev ?? false
@@ -270,7 +334,7 @@ const config = defineConfigWithTheme<ThemeConfig>({
     registerType: 'prompt',
     injectRegister: false,
     // The plugin's default is relative to srcDir (content/), not to this folder.
-    outDir: fileURLToPath(new URL('./dist', import.meta.url)),
+    outDir,
     // The PNG glob below already has them.
     includeManifestIcons: false,
     manifest: {
@@ -298,7 +362,10 @@ const config = defineConfigWithTheme<ThemeConfig>({
     workbox: {
       // Every page, the search index, fonts and diagrams. Clean URLs map to their .html files.
       // The plugin adds the manifest itself.
-      globPatterns: ['**/*.{html,js,css,woff2,svg,png}'],
+      // The .md copies are small and let "Copy page as markdown" work offline.
+      globPatterns: ['**/*.{html,js,css,woff2,svg,png,md}'],
+      // Only link previews use it.
+      globIgnores: ['og.png'],
       // Unknown addresses go to the network, so files such as llms.txt are never answered with a page.
       navigateFallback: null,
       // The site uses no query strings, so a shared link with one still opens offline.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://meghsohor.github.io/system-designs/sitemap.xml
