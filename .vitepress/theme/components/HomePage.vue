@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useData, withBase } from 'vitepress'
-import type { CatalogPage, CatalogSection } from '../../lib/catalog.ts'
+import type { CatalogSection } from '../../lib/catalog.ts'
 import type { ThemeConfig } from '../../config.mts'
 import type { PageProgress } from '../progress/store.ts'
+import { readLabel } from '../designs.ts'
 import { useProgress } from '../progress/useProgress.ts'
-import StatusMark from './StatusMark.vue'
+import DesignCards from './DesignCards.vue'
 
 const { theme } = useData<ThemeConfig>()
 const { loaded, track } = useProgress()
@@ -16,12 +17,6 @@ const sections = computed(() => theme.value.catalog)
 const framework = computed(() => sections.value.find((s) => s.id === 'framework'))
 const learn = computed(() => sections.value.filter((s) => s.id !== 'designs'))
 const designSection = computed(() => sections.value.find((s) => s.id === 'designs'))
-// Written designs first, then coming soon, each in index order.
-const designs = computed(() =>
-  [...(designSection.value?.pages ?? [])]
-    .sort((a, b) => Number(a.kind === 'soon') - Number(b.kind === 'soon'))
-    .slice(0, DESIGNS_SHOWN),
-)
 const written = computed(() =>
   sections.value.flatMap((s) => s.pages).filter((p) => p.kind === 'written'),
 )
@@ -82,25 +77,10 @@ function sectionCount(section: CatalogSection) {
   return { done: counts?.done ?? 0, total }
 }
 
-function readLabel(entry: PageProgress | undefined): string {
-  if (!entry) return 'Not started'
-  if (entry.status === 'done') return 'Done'
-  return `${Math.round(entry.position * 100)}% read`
-}
-
 const barValue = (entry: PageProgress | undefined): number =>
   entry?.status === 'done' ? 1 : (entry?.position ?? 0)
 
 const quizCount = (n: number): string => `${n} ${n === 1 ? 'quiz' : 'quizzes'}`
-
-function lastQuiz(page: CatalogPage) {
-  return saved.value?.quizzes.get(page.path)?.last
-}
-
-// Index summaries follow a colon, so they start in lower case.
-function sentence(text = ''): string {
-  return text.replace(/^[a-z]/, (c) => c.toUpperCase())
-}
 </script>
 
 <template>
@@ -239,25 +219,7 @@ function sentence(text = ''): string {
           See all {{ designSection.pages.length }} designs
         </a>
       </div>
-      <ul class="grid designs">
-        <li v-for="page in designs" :key="page.path">
-          <a class="card" :class="{ pending: page.kind === 'soon' }" :href="withBase(page.link)">
-            <span class="card-title">{{ page.label }}</span>
-            <span v-if="page.kind === 'soon'" class="soon">Coming soon</span>
-            <template v-else>
-              <span class="summary">{{ sentence(page.summary) }}</span>
-              <span v-if="saved?.pages.get(page.path)" class="status">
-                <!-- The text beside it says the same, so screen readers skip the mark. -->
-                <StatusMark aria-hidden="true" :status="saved.pages.get(page.path)?.status" />
-                {{ readLabel(saved.pages.get(page.path)) }}
-              </span>
-              <span v-if="lastQuiz(page)" class="quiz">
-                Quiz {{ lastQuiz(page)?.score }} / {{ lastQuiz(page)?.total }}
-              </span>
-            </template>
-          </a>
-        </li>
-      </ul>
+      <DesignCards :limit="DESIGNS_SHOWN" />
     </section>
   </div>
 </template>
@@ -443,9 +405,6 @@ function sentence(text = ''): string {
 .grid.learn {
   grid-template-columns: 1fr;
 }
-.grid.designs {
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
-}
 @media (min-width: 640px) {
   .grid.learn {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -469,9 +428,6 @@ function sentence(text = ''): string {
 }
 a.card:hover {
   border-color: var(--vp-c-brand-1);
-}
-.card.pending {
-  border-style: dashed;
 }
 .card-top {
   display: flex;
@@ -509,24 +465,6 @@ a.card:hover {
 }
 .waiting {
   visibility: hidden;
-}
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--vp-c-text-1);
-}
-.quiz {
-  align-self: flex-start;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
 }
 .visually-hidden {
   position: absolute;

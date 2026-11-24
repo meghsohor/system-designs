@@ -13,6 +13,7 @@ import {
   titleOf,
   type CatalogSection,
 } from './lib/catalog.ts'
+import { designListRange } from './lib/design-cards.ts'
 import {
   diagramHash,
   diagramHtml,
@@ -42,6 +43,7 @@ const outDir = fileURLToPath(new URL('./dist', import.meta.url))
 const diagramsDir = join(contentDir, 'public', 'diagrams')
 const catalog = loadCatalog(contentDir)
 const catalogPages = new Map(catalog.flatMap((s) => s.pages).map((p) => [p.path, p]))
+const designsOverview = catalog.find((s) => s.id === 'designs')?.overviewPath
 
 // A quiz page is only the quiz component, with the questions passed in. The catalog has
 // already checked the file, so the build has failed before this on a bad quiz.
@@ -231,6 +233,22 @@ const config = defineConfigWithTheme<ThemeConfig>({
         const token = new state.Token('html_block', '', 0)
         token.content = '<PageActions />\n'
         state.tokens.splice(titleEnd + 1, 0, token)
+      })
+
+      // On the site, the Designs page's list becomes cards; GitHub still shows the list.
+      md.core.ruler.push('book-design-cards', (state) => {
+        if (!designsOverview || state.env?.relativePath !== designsOverview) return
+        const dir = posix.dirname(designsOverview)
+        const range = designListRange(
+          state.tokens,
+          (href) =>
+            catalogPages.get(posix.join(dir, href.split('#')[0] ?? ''))?.section === 'designs',
+        )
+        if (!range) throw new Error(`${designsOverview}: no list of design links to show as cards`)
+        const [start, end] = range
+        const token = new state.Token('html_block', '', 0)
+        token.content = '<DesignCards />\n'
+        state.tokens.splice(start, end - start + 1, token)
       })
 
       // VitePress titles GitHub alerts in capitals and ignores label options for them.
