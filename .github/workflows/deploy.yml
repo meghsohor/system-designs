@@ -1,0 +1,81 @@
+name: Deploy
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions: {}
+
+# Runs on main queue in push order and are never cancelled; a newer PR push cancels the older build.
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # "Last updated" dates come from the git history.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # Restored before npm ci, so Puppeteer's install step finds Chrome and skips the download.
+      - name: Cache Chrome for Puppeteer
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/puppeteer
+          key: puppeteer-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
+      # Diagram files are named by a hash of their source, so an older cache is safe to start from.
+      - name: Cache rendered diagrams
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: content/public/diagrams
+          key: diagrams-${{ hashFiles('content/**/*.md', '.vitepress/lib/mermaid.ts', 'package-lock.json') }}
+          restore-keys: diagrams-
+
+      - run: npm ci
+
+      # Mermaid measures labels in Arial; without a matching font they overflow their boxes.
+      - name: Check the diagram font
+        run: |
+          font="$(fc-match Arial)"
+          echo "$font"
+          case "$font" in
+            *Arial* | *"Liberation Sans"*) ;;
+            *) echo "::error::No Arial-compatible font: $font"; exit 1 ;;
+          esac
+
+      - run: npm run check
+      - run: npm test
+      - run: npm run build
+
+      - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: .vitepress/dist
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
