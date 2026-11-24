@@ -27,7 +27,7 @@ const designs = computed(() => {
 /* Also overrides VitePress's list styles when it sits in a doc page. */
 .design-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--design-card-min, 260px)), 1fr));
   gap: 14px;
   margin: 0;
   padding: 0;

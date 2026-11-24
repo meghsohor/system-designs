@@ -324,6 +324,13 @@ const config = defineConfigWithTheme<ThemeConfig>({
   transformPageData(pageData) {
     const kind = kindOf(pageData.relativePath, catalog)
     pageData.frontmatter.pageKind = kind
+    // The Designs page has no outline, so its cards take the outline's column too.
+    if (pageData.relativePath === designsOverview) {
+      pageData.frontmatter.aside ??= false
+      pageData.frontmatter.pageClass = [pageData.frontmatter.pageClass, 'designs-page']
+        .filter(Boolean)
+        .join(' ')
+    }
     // The home page's title is the site name alone.
     if (pageData.relativePath === 'index.md') pageData.titleTemplate = false
     pageData.description ||=

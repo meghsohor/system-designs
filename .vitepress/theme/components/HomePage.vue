@@ -212,7 +212,7 @@ const quizCount = (n: number): string => `${n} ${n === 1 ? 'quiz' : 'quizzes'}`
       </ul>
     </section>
 
-    <section v-if="designSection" class="block" aria-labelledby="designs-heading">
+    <section v-if="designSection" class="block designs" aria-labelledby="designs-heading">
       <div class="heading-row">
         <h2 id="designs-heading" class="heading">Designs</h2>
         <a class="see-all" :href="withBase(designSection.overviewLink)">
@@ -409,6 +409,10 @@ const quizCount = (n: number): string => `${n} ${n === 1 ? 'quiz' : 'quizzes'}`
   .grid.learn {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+.designs {
+  /* Three columns of six cards on a laptop, not four and two. */
+  --design-card-min: 300px;
 }
 .grid li {
   display: flex;

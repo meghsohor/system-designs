@@ -494,3 +494,8 @@ html.has-scrollbar:has(.reset-dialog[open]) {
 .listen-sheet-open .VPDoc {
   padding-bottom: calc(96px + var(--listen-player-space, 0px));
 }
+
+/* The Designs page runs wide for its cards; its text keeps the usual reading width. */
+.designs-page .vp-doc > div > :not(.design-cards) {
+  max-width: 688px;
+}
