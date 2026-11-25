@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import type { CatalogPage } from '../.vitepress/lib/catalog.ts'
 import { designListRange, type ListToken } from '../.vitepress/lib/design-cards.ts'
-import { designOrder, readAction, readLabel, sentence } from '../.vitepress/theme/designs.ts'
+import { sentence } from '../.vitepress/lib/sentence.ts'
+import { designOrder, readAction, readLabel } from '../.vitepress/theme/designs.ts'
 
 describe('designListRange', () => {
   const list = (href: string): ListToken[] => [

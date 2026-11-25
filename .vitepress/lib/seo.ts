@@ -1,6 +1,7 @@
 // Head tags for search engines and link previews. Runs in Node at build time.
 import type { HeadConfig } from 'vitepress'
 import { firstSentence, linkOf, type CatalogSection, type PageKind } from './catalog.ts'
+import { sentence } from './sentence.ts'
 
 export interface Site {
   /** The site's address with its base path, without a trailing slash. */
@@ -30,7 +31,6 @@ export function describePage(
   src: string,
   catalog: CatalogSection[],
 ): string | undefined {
-  const sentence = (text?: string) => text && text[0]?.toUpperCase() + text.slice(1)
   for (const section of catalog) {
     if (section.overviewPath === path && !section.pages.some((p) => p.path === path))
       return sentence(section.summary)

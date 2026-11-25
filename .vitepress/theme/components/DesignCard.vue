@@ -2,7 +2,8 @@
 import { withBase } from 'vitepress'
 import { computed } from 'vue'
 import type { CatalogPage } from '../../lib/catalog.ts'
-import { readAction, readLabel, sentence } from '../designs.ts'
+import { sentence } from '../../lib/sentence.ts'
+import { readAction, readLabel } from '../designs.ts'
 import { useProgress } from '../progress/useProgress.ts'
 import StatusMark from './StatusMark.vue'
 

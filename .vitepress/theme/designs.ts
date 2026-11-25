@@ -16,8 +16,3 @@ export function readAction(entry: PageProgress | undefined): string {
   if (!entry) return 'Start reading'
   return entry.status === 'done' ? 'Read again' : 'Continue'
 }
-
-// Index summaries follow a colon, so they start in lower case.
-export function sentence(text = ''): string {
-  return text.replace(/^[a-z]/, (c) => c.toUpperCase())
-}
