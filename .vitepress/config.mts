@@ -267,6 +267,7 @@ const config = defineConfigWithTheme<ThemeConfig>({
       llmstxt({
         title: TITLE,
         description: DESCRIPTION,
+        details: `The whole book in one file: ${SITE.url}/llms-full.txt`,
         domain: 'https://meghsohor.github.io',
         ignoreFiles: notForAgents,
         customTemplateVariables: { toc: llmsToc(catalog, SITE.url) },
