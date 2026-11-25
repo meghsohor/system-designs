@@ -128,16 +128,21 @@ function decodeLink(href: string): string {
  * Links from a section index to `.md` files inside the section, in order of first
  * appearance. `indexDir` is the index's folder relative to the content root.
  * A page's summary is the text after `:` in its list item; failing that, the `**Goal:**`
- * line of the index section (under a heading) that links to it.
+ * line of the index section whose last link (its "Full guide" link) points to the page.
  */
 export function parseIndexLinks(src: string, indexDir: string): IndexLink[] {
   const seen = new Set<string>()
   const links: IndexLink[] = []
   const goals = new Map<string, string>()
   let goal: string | undefined
+  let lastLink: string | undefined
+  const endSection = () => {
+    if (goal && lastLink && !goals.has(lastLink)) goals.set(lastLink, goal)
+    goal = lastLink = undefined
+  }
   let listDepth = 0
   for (const block of blocks(src)) {
-    if (block.type === 'heading_open') goal = undefined
+    if (block.type === 'heading_open') endSection()
     if (block.type === 'list_item_open') listDepth++
     if (block.type === 'list_item_close') listDepth--
     if (block.type !== 'inline') continue
@@ -153,7 +158,7 @@ export function parseIndexLinks(src: string, indexDir: string): IndexLink[] {
         : posix.normalize(posix.join(indexDir, href))
       const base = posix.basename(target)
       if (!target.startsWith(indexDir + '/') || base === 'index.md' || base === 'quiz.md') return
-      if (goal && !goals.has(target)) goals.set(target, goal)
+      lastLink = target
       if (seen.has(target)) return
       seen.add(target)
 
@@ -166,6 +171,7 @@ export function parseIndexLinks(src: string, indexDir: string): IndexLink[] {
       links.push({ target, text, summary })
     })
   }
+  endSection()
   return links.map((link) => ({ ...link, summary: link.summary ?? goals.get(link.target) }))
 }
 

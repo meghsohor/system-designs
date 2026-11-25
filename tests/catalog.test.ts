@@ -133,6 +133,8 @@ describe('parseIndexLinks', () => {
       '**Goal:** show you understood',
       'the prompt.',
       '',
+      'Then [two](two.md) comes later.',
+      '',
       '[Full guide →](one.md)',
       '',
       '## 2. Two',
