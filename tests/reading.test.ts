@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   currentPath,
   DWELL_MS,
+  historyRestoresPlace,
   nextStatus,
   readFraction,
   readSections,
@@ -53,6 +54,15 @@ describe('nextStatus', () => {
     expect(nextStatus(fits)).toBeUndefined()
     expect(nextStatus({ ...fits, userScrolled: true })).toBeUndefined()
     expect(nextStatus({ ...fits, elapsed: DWELL_MS })).toBe('done')
+  })
+})
+
+describe('historyRestoresPlace', () => {
+  it('is true only when the history entry keeps a place below the top', () => {
+    expect(historyRestoresPlace({ scrollPosition: 1800 })).toBe(true)
+    expect(historyRestoresPlace({ scrollPosition: 0 })).toBe(false)
+    expect(historyRestoresPlace({})).toBe(false)
+    expect(historyRestoresPlace(null)).toBe(false)
   })
 })
 

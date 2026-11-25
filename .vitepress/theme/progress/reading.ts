@@ -59,6 +59,15 @@ export function nextStatus({
   return undefined
 }
 
+/**
+ * Whether Back or Forward will put the reader back on the page by itself. VitePress keeps a
+ * place only for a page left by a link; a page left by Back or Forward opens at the top.
+ */
+export function historyRestoresPlace(state: unknown): boolean {
+  const position = (state as { scrollPosition?: unknown } | null)?.scrollPosition
+  return typeof position === 'number' && position > 0
+}
+
 /** Whether to take the reader back to a saved place: no #hash link, and a place mid-page. */
 export function shouldResume(position: number | undefined, hash: string): boolean {
   if (hash || position === undefined) return false

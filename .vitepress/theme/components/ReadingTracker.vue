@@ -14,6 +14,7 @@ import {
 import {
   currentPath,
   DWELL_MS,
+  historyRestoresPlace,
   nextStatus,
   readFraction,
   readSections,
@@ -128,11 +129,13 @@ function unpin() {
   schedule()
 }
 
-// Back or Forward to another page: the browser already puts the reader back at their place.
+// Back or Forward to another page that VitePress scrolls back to the reader's place itself.
 let enteredPathname = ''
 let fromHistory = false
-function onPopState() {
-  if (window.location.pathname !== enteredPathname) fromHistory = true
+function onPopState(event: PopStateEvent) {
+  if (window.location.pathname !== enteredPathname && historyRestoresPlace(event.state)) {
+    fromHistory = true
+  }
   unpin()
 }
 
