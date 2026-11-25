@@ -128,6 +128,14 @@ function unpin() {
   schedule()
 }
 
+// Back or Forward to another page: the browser already puts the reader back at their place.
+let enteredPathname = ''
+let fromHistory = false
+function onPopState() {
+  if (window.location.pathname !== enteredPathname) fromHistory = true
+  unpin()
+}
+
 function onScroll() {
   if (Date.now() > ignoreScrollUntil) userScrolled = true
   // Scrolled away from a section picked in the outline, by any means (scrollbar, find, …).
@@ -204,6 +212,9 @@ async function enter() {
   await nextTick()
   if (token !== entry) return
   path = page.value.relativePath
+  enteredPathname = window.location.pathname
+  const restored = fromHistory
+  fromHistory = false
   if (pausedPath.value !== path) pausedPath.value = undefined
   active = frontmatter.value.pageKind === 'written'
   // Left on between written pages, so the outline doesn't flash its plain look.
@@ -223,7 +234,7 @@ async function enter() {
     measure()
   }, DWELL_MS)
   measure()
-  void resume(token)
+  if (!restored) void resume(token)
 }
 
 const onPageHide = () => save(true)
@@ -245,7 +256,7 @@ onMounted(() => {
   window.addEventListener('resize', schedule, { passive: true })
   window.addEventListener('pagehide', onPageHide)
   // Back/forward and in-page # links move the page without a scroll gesture of the reader's.
-  window.addEventListener('popstate', unpin)
+  window.addEventListener('popstate', onPopState)
   window.addEventListener('hashchange', unpin)
   for (const type of ['wheel', 'touchmove', 'keydown']) {
     window.addEventListener(type, onInput, { passive: true })
@@ -258,7 +269,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', schedule)
   window.removeEventListener('pagehide', onPageHide)
-  window.removeEventListener('popstate', unpin)
+  window.removeEventListener('popstate', onPopState)
   window.removeEventListener('hashchange', unpin)
   for (const type of ['wheel', 'touchmove', 'keydown']) {
     window.removeEventListener(type, onInput)
