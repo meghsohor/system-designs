@@ -1,8 +1,12 @@
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { CatalogSection } from '../.vitepress/lib/catalog.ts'
 import {
   absoluteLinks,
   builtFileUrl,
+  fixLlmsLinks,
   llmsToc,
   mdCopyPath,
   type LinkContext,
@@ -68,6 +72,33 @@ describe('llmsToc', () => {
         `- [c/d.md](${SITE}/c/d.md): caching.`,
       ].join('\n'),
     )
+  })
+})
+
+describe('fixLlmsLinks', () => {
+  const catalog: CatalogSection[] = [
+    {
+      id: 'c',
+      title: 'Designs',
+      nav: 'C',
+      overviewLink: '/c/',
+      overviewPath: 'c/index.md',
+      pages: [
+        { path: 'c/d.md', link: '/c/d', label: 'D', title: 'D', kind: 'written', section: 'c' },
+      ],
+    },
+  ]
+
+  it('fails the build when a page copy or llms file is missing', () => {
+    const out = mkdtempSync(join(tmpdir(), 'llms-'))
+    try {
+      writeFileSync(join(out, 'llms.txt'), '# Book\n')
+      expect(() => fixLlmsLinks(out, catalog, SITE, 'https://repo')).toThrow(
+        'Missing files for agents and Copy page: c/d.md, llms-full.txt',
+      )
+    } finally {
+      rmSync(out, { recursive: true, force: true })
+    }
   })
 })
 

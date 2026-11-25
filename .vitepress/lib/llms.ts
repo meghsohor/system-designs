@@ -120,14 +120,21 @@ export function fixLlmsLinks(
     return ctx ? absoluteLinks(markdown, path, ctx) : markdown
   }
 
+  // Copy page and agents rely on these files, so a missing one fails the build.
+  const missing = [...pages.map((p) => mdCopyPath(p.link)), 'llms.txt', 'llms-full.txt'].filter(
+    (path) => !existsSync(join(outDir, path)),
+  )
+  if (missing.length > 0) {
+    throw new Error(`Missing files for agents and Copy page: ${missing.join(', ')}`)
+  }
+
   for (const page of pages) {
     const file = join(outDir, mdCopyPath(page.link))
-    if (existsSync(file)) writeFileSync(file, fix(readFileSync(file, 'utf8'), page.path))
+    writeFileSync(file, fix(readFileSync(file, 'utf8'), page.path))
   }
 
   // llms-full.txt is every copy in a row, each opening with a `url:` front matter block.
   const full = join(outDir, 'llms-full.txt')
-  if (!existsSync(full)) return
   const parts = readFileSync(full, 'utf8').split(/(?=^---\nurl: )/m)
   const fixed = parts.map((part) => {
     const source = sourceOfUrl.get(/^---\nurl: (\S+)/.exec(part)?.[1] ?? '')
