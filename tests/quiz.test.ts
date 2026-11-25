@@ -87,6 +87,13 @@ describe('parseQuiz', () => {
     ])
   })
 
+  it('reports a review link with a broken %-escape instead of throwing', () => {
+    const src = quiz(question({ title: 'Odd', review: 'Review: [API](design.md#%E0%A4)' }))
+    expect(parseQuiz(src, PATH).problems).toEqual([
+      `${PATH}: question 1 ("Odd"): the review link must point to a page in the book: design.md#%E0%A4`,
+    ])
+  })
+
   it('rejects images, and a second explanation or Review line', () => {
     const src = quiz(
       question({ title: 'Pictured', why: '> See ![x](./x.svg)' }),

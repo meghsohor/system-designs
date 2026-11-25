@@ -59,11 +59,20 @@ function closeOf(tokens: Token[], start: number): number {
 
 function linkUrl(href: string, quizPath: string): { target: string; hash: string } | undefined {
   if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('/')) return undefined
-  const [file = '', hash = ''] = href.split('#', 2)
+  const [rawFile = '', rawHash = ''] = href.split('#', 2)
+  let file: string
+  let hash: string
+  try {
+    file = decodeURI(rawFile)
+    hash = decodeURIComponent(rawHash)
+  } catch {
+    // A broken %-escape is reported as a bad review link rather than crashing the build.
+    return undefined
+  }
   if (!file.endsWith('.md')) return undefined
-  const target = posix.normalize(posix.join(posix.dirname(quizPath), decodeURI(file)))
+  const target = posix.normalize(posix.join(posix.dirname(quizPath), file))
   if (target.startsWith('../')) return undefined
-  return { target, hash: decodeURIComponent(hash) }
+  return { target, hash }
 }
 
 /**

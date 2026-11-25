@@ -118,6 +118,12 @@ describe('parseIndexLinks', () => {
       { target: 'patterns/d.md', text: 'D', summary: undefined },
     ])
   })
+
+  it('keeps a link with a broken %-escape as written instead of throwing', () => {
+    expect(parseIndexLinks('- [Odd](%E0%A4.md)\n', 'patterns').map((l) => l.target)).toEqual([
+      'patterns/%E0%A4.md',
+    ])
+  })
 })
 
 describe('linkOf', () => {

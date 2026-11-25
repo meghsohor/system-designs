@@ -115,6 +115,15 @@ export function isComingSoon(src: string): boolean {
   return titleEnd !== -1 && tokens.length === titleEnd + 1
 }
 
+// A broken %-escape stays as written, so it's reported as a missing page instead of crashing.
+function decodeLink(href: string): string {
+  try {
+    return decodeURI(href)
+  } catch {
+    return href
+  }
+}
+
 /**
  * Links from a section index to `.md` files inside the section, in order of first
  * appearance. `indexDir` is the index's folder relative to the content root.
@@ -130,7 +139,7 @@ export function parseIndexLinks(src: string, indexDir: string): IndexLink[] {
     const children = block.children ?? []
     children.forEach((child, i) => {
       if (child.type !== 'link_open') return
-      const href = decodeURI(child.attrGet('href') ?? '').split('#', 1)[0] ?? ''
+      const href = decodeLink(child.attrGet('href') ?? '').split('#', 1)[0] ?? ''
       if (!href.endsWith('.md') || /^[a-z][a-z0-9+.-]*:/i.test(href)) return
       const target = href.startsWith('/')
         ? posix.normalize(href.slice(1))
