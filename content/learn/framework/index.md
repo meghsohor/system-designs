@@ -138,6 +138,8 @@ small system is a red flag, not a bonus.
 
 ## 8. Wrap-up
 
+**Goal:** leave the interviewer with a clear summary and what you'd do next.
+
 - Summarize the design in 3–4 sentences.
 - Say what breaks first at 10× load and how you'd fix it.
 - Mention what you'd add with more time (monitoring, multi-region, etc.).

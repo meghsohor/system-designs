@@ -31,6 +31,7 @@ System design interview notes, published as an offline-first ebook at https://me
 ## Writing content
 
 - Each section's `index.md` is its table of contents. Page order is the order it links to pages: `- [Title](page.md): one-line summary`.
+  - The summary becomes the page's search description and its line in `llms.txt`. In an index without a list (the framework's table), it's the `**Goal:**` line of the index section that links to the page.
 - To add a page: create the `.md` in the section folder with `# Title` as its first line, then link it from the section's `index.md`. The build fails if a page isn't linked, a link points to a missing file, or a page has no `# Title`.
 - A page with nothing after its title shows as "Coming soon" and doesn't count towards progress.
 - Use relative `.md` links so they work on GitHub and on the site. Heading anchors use GitHub's slugs.

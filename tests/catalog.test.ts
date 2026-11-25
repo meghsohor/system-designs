@@ -119,6 +119,32 @@ describe('parseIndexLinks', () => {
     ])
   })
 
+  it('takes a summary from the Goal line of the section that links to the page', () => {
+    const src = [
+      '# Framework',
+      '',
+      '| Step |',
+      '|---|',
+      '| [One](one.md) |',
+      '| [Two](two.md) |',
+      '',
+      '## 1. One',
+      '',
+      '**Goal:** show you understood',
+      'the prompt.',
+      '',
+      '[Full guide →](one.md)',
+      '',
+      '## 2. Two',
+      '',
+      '[Full guide →](two.md)',
+    ].join('\n')
+    expect(parseIndexLinks(src, 'f')).toEqual([
+      { target: 'f/one.md', text: 'One', summary: 'show you understood the prompt.' },
+      { target: 'f/two.md', text: 'Two', summary: undefined },
+    ])
+  })
+
   it('keeps a link with a broken %-escape as written instead of throwing', () => {
     expect(parseIndexLinks('- [Odd](%E0%A4.md)\n', 'patterns').map((l) => l.target)).toEqual([
       'patterns/%E0%A4.md',
