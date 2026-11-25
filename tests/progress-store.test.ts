@@ -60,7 +60,7 @@ function fakeStorage(initial: Record<string, string> = {}) {
       return map.get(key) ?? null
     },
     setItem: (key, value) => {
-      if (fail.has('setItem')) throw new Error('quota')
+      if (fail.has('setItem')) throw new DOMException('full', 'QuotaExceededError')
       map.set(key, value)
     },
     removeItem: (key) => void map.delete(key),
@@ -298,6 +298,36 @@ describe('when storage misbehaves', () => {
     store.markDone(B)
     expect(store.mode).toEqual({ kind: 'memory', reason: 'full' })
     expect([store.getPage(A)?.status, store.getPage(B)?.status]).toEqual(['done', 'done'])
+  })
+
+  it('saves again, a reset included, once full storage has room', () => {
+    const { store, fail, saved } = setup()
+    store.markDone(A)
+    fail.add('setItem')
+    store.markDone(B)
+    expect(store.mode).toEqual({ kind: 'memory', reason: 'full' })
+    fail.delete('setItem')
+    store.resetPage(A)
+    expect(store.mode).toEqual({ kind: 'stored' })
+    expect(saved().pages[A]).toBeUndefined()
+    expect(saved().pages[B]?.status).toBe('done')
+  })
+
+  it('calls a write refused for another reason blocked, not full', () => {
+    const { store, map } = setup()
+    const denied: StorageLike = {
+      getItem: (key) => map.get(key) ?? null,
+      setItem: () => {
+        throw new DOMException('denied', 'SecurityError')
+      },
+      removeItem: () => {},
+    }
+    const second = createProgressStore({ catalog, storage: () => denied, now })
+    second.load()
+    store.markDone(A)
+    second.markDone(B)
+    expect(second.mode).toEqual({ kind: 'memory', reason: 'blocked' })
+    expect(second.getPage(A)?.status).toBe('done')
   })
 
   it('reads storage that can no longer be written to', () => {

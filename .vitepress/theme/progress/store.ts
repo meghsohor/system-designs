@@ -89,6 +89,11 @@ export function browserStorage(): StorageLike | null {
   }
 }
 
+// Older Firefox names it NS_ERROR_DOM_QUOTA_REACHED.
+const isQuotaError = (error: unknown): boolean =>
+  error instanceof DOMException &&
+  (error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED')
+
 type Parsed = { kind: 'ok'; data: ProgressData } | { kind: 'newer' } | { kind: 'bad' }
 
 const isObject = (value: unknown): value is Record<string, unknown> =>
@@ -198,9 +203,8 @@ export function createProgressStore({
     try {
       if (raw !== null && storage.getItem(BACKUP_KEY) === null) storage.setItem(BACKUP_KEY, raw)
       storage.setItem(PROGRESS_KEY, JSON.stringify(empty()))
-    } catch {
-      // Reading worked, so a failed write means storage is full.
-      return 'full'
+    } catch (error) {
+      return isQuotaError(error) ? 'full' : 'blocked'
     }
     return empty()
   }
@@ -232,12 +236,14 @@ export function createProgressStore({
       else data = saved
     }
     if (!change(data)) return
-    if (mode.kind === 'stored') {
+    // Full storage is tried again on each change: a reset makes the data smaller and may fit.
+    if (mode.kind === 'stored' || (mode.kind === 'memory' && mode.reason === 'full')) {
       try {
         storage?.setItem(PROGRESS_KEY, JSON.stringify(data))
-      } catch {
-        // Saved progress was just read, so it stays on screen; only new changes go unsaved.
-        mode = { kind: 'memory', reason: 'full' }
+        mode = { kind: 'stored' }
+      } catch (error) {
+        // Saved progress was already read, so it stays on screen; only new changes go unsaved.
+        mode = { kind: 'memory', reason: isQuotaError(error) ? 'full' : 'blocked' }
       }
     }
     notify()
