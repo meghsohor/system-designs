@@ -186,6 +186,7 @@ summary.item:focus-visible {
 
 .count {
   flex: none;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
   color: var(--vp-c-text-2);

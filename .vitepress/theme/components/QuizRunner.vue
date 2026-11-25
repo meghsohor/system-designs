@@ -530,12 +530,14 @@ fieldset {
   border: 0;
 }
 
+/* The gap sits on the legend: Safari drops a margin from inside it. */
 legend {
+  margin-bottom: 16px;
   padding: 0;
 }
 
 .question {
-  margin: 0 0 16px;
+  margin: 0;
   padding: 0;
   border: 0;
   font-family: var(--book-font-display);
