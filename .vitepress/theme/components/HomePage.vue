@@ -60,6 +60,9 @@ const savedNote = computed(() => {
   if (mode?.kind === 'memory' && mode.reason === 'blocked') {
     return "This browser isn't saving progress, so it's gone when you close the page."
   }
+  if (mode?.kind === 'memory' && mode.reason === 'full') {
+    return "This browser's storage is full, so new progress is gone when you close the page."
+  }
   if (mode?.kind === 'memory') {
     return 'A newer version of this site saved progress here, so this page leaves it alone.'
   }

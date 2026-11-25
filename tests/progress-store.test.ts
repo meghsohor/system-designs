@@ -279,10 +279,41 @@ describe('when storage misbehaves', () => {
     store.markDone(A)
     fail.add('setItem')
     store.markDone(B)
-    expect(store.mode).toEqual({ kind: 'memory', reason: 'blocked' })
+    expect(store.mode).toEqual({ kind: 'memory', reason: 'full' })
     expect(store.getPage(B)?.status).toBe('done')
     fail.delete('setItem')
     expect(saved().pages[B]).toBeUndefined()
+  })
+
+  it('shows saved progress when storage is full', () => {
+    const fake = fakeStorage()
+    const first = createProgressStore({ catalog, storage: () => fake.storage, now })
+    first.load()
+    first.markDone(A)
+    fake.fail.add('setItem')
+    const store = createProgressStore({ catalog, storage: () => fake.storage, now })
+    store.load()
+    expect(store.mode).toEqual({ kind: 'stored' })
+    expect(store.getPage(A)?.status).toBe('done')
+    store.markDone(B)
+    expect(store.mode).toEqual({ kind: 'memory', reason: 'full' })
+    expect([store.getPage(A)?.status, store.getPage(B)?.status]).toEqual(['done', 'done'])
+  })
+
+  it('reads storage that can no longer be written to', () => {
+    const storage = {
+      getItem: () => null,
+      setItem: () => {
+        throw new Error('quota')
+      },
+      removeItem: () => {},
+    }
+    vi.stubGlobal('window', { localStorage: storage })
+    try {
+      expect(browserStorage()).toBe(storage)
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 
   it('never overwrites data saved by a newer version', () => {
@@ -428,7 +459,7 @@ describe('edge cases', () => {
     fake.fail.add('setItem')
     const store = createProgressStore({ catalog, storage: () => fake.storage, now })
     store.load()
-    expect(store.mode).toEqual({ kind: 'memory', reason: 'blocked' })
+    expect(store.mode).toEqual({ kind: 'memory', reason: 'full' })
     expect(fake.map.get(PROGRESS_KEY)).toBe('{not json')
   })
 

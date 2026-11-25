@@ -55,6 +55,9 @@ const notice = computed(() => {
   if (mode.reason === 'blocked') {
     return "This browser isn't letting the site save anything, as in a private window or with cookies blocked. What you read now shows here until you close or reload the page."
   }
+  if (mode.reason === 'full') {
+    return "This browser's storage for the site is full, so new progress isn't saved. What you read now shows here until you close or reload the page."
+  }
   return 'A newer version of this site saved progress on this device, so this page leaves it alone and shows only what you do now. Reloading the page should bring the newer version.'
 })
 

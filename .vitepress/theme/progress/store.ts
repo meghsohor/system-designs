@@ -36,11 +36,14 @@ export interface ProgressData {
 }
 
 /**
- * `unknown` until `load()` runs in the browser. `memory`: nothing is saved, either because
- * storage is blocked or because another version of the site saved data we mustn't overwrite.
+ * `unknown` until `load()` runs in the browser. `memory`: nothing is saved, because storage is
+ * blocked, because it's full, or because another version of the site saved data we mustn't
+ * overwrite.
  */
 export type StoreMode =
-  { kind: 'unknown' } | { kind: 'stored' } | { kind: 'memory'; reason: 'blocked' | 'newer' }
+  | { kind: 'unknown' }
+  | { kind: 'stored' }
+  | { kind: 'memory'; reason: 'blocked' | 'full' | 'newer' }
 
 /** What `resetPage` removed, so "Undo" can put it back exactly. */
 export interface ResetSnapshot {
@@ -79,9 +82,7 @@ const empty = (): ProgressData => ({ version: VERSION, pages: map(), quizzes: ma
 export function browserStorage(): StorageLike | null {
   try {
     const storage = window.localStorage
-    const probe = 'sdi:probe'
-    storage.setItem(probe, '1')
-    storage.removeItem(probe)
+    storage.getItem(PROGRESS_KEY)
     return storage
   } catch {
     return null
@@ -181,7 +182,7 @@ export function createProgressStore({
   const stamp = () => now().toISOString()
 
   // Reads what's saved right now; another tab may have written since we last looked.
-  function readSaved(): ProgressData | 'newer' | 'blocked' {
+  function readSaved(): ProgressData | 'newer' | 'blocked' | 'full' {
     if (!storage) return 'blocked'
     let raw: string | null
     try {
@@ -198,7 +199,8 @@ export function createProgressStore({
       if (raw !== null && storage.getItem(BACKUP_KEY) === null) storage.setItem(BACKUP_KEY, raw)
       storage.setItem(PROGRESS_KEY, JSON.stringify(empty()))
     } catch {
-      return 'blocked'
+      // Reading worked, so a failed write means storage is full.
+      return 'full'
     }
     return empty()
   }
@@ -208,7 +210,7 @@ export function createProgressStore({
     if (mode.kind !== 'unknown') return
     storage = getStorage()
     const saved = readSaved()
-    if (saved === 'blocked' || saved === 'newer') {
+    if (typeof saved === 'string') {
       mode = { kind: 'memory', reason: saved }
       data = empty()
     } else {
@@ -226,7 +228,7 @@ export function createProgressStore({
     if (mode.kind === 'unknown') return
     if (mode.kind === 'stored') {
       const saved = readSaved()
-      if (saved === 'blocked' || saved === 'newer') mode = { kind: 'memory', reason: saved }
+      if (typeof saved === 'string') mode = { kind: 'memory', reason: saved }
       else data = saved
     }
     if (!change(data)) return
@@ -234,7 +236,8 @@ export function createProgressStore({
       try {
         storage?.setItem(PROGRESS_KEY, JSON.stringify(data))
       } catch {
-        mode = { kind: 'memory', reason: 'blocked' }
+        // Saved progress was just read, so it stays on screen; only new changes go unsaved.
+        mode = { kind: 'memory', reason: 'full' }
       }
     }
     notify()
