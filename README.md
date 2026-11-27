@@ -1,18 +1,15 @@
 # System Design Interview
 
-**Start here:** [How to approach a system design problem](APPROACH.md)
+**Read it as a book:** https://meghsohor.github.io/system-designs/ (works offline, tracks your progress, reads pages aloud)
 
-## Designs
+**Start here:** [How to approach a system design problem](content/learn/framework/index.md)
 
-1. [URL Shortener](url-shortener/design.md)
-2. [API Gateway](api-gateway/design.md)
-3. [Chat System](chat-system/design.md)
-4. [Distributed Cache](distributed-cache/design.md)
-5. [Load Balancer](load-balancer/design.md)
-6. [Logging Monitoring System](logging-monitoring-system/design.md)
-7. [News Feed](news-feed/design.md)
-8. [Push Notification Service](push-notification-service/design.md)
-9. [Rate Limiter](rate-limiter/design.md)
-10. [Ride Sharing System](ride-sharing-system/design.md)
-11. [Search Autocomplete](search-autocomplete/design.md)
-12. [Streaming Platform](streaming-platform/design.md)
+## Sections
+
+1. [Interview framework](content/learn/framework/index.md): the 8 steps of a 45-minute interview.
+2. [Foundations](content/learn/foundations/index.md): the ideas each framework step leans on.
+3. [Toolbox](content/learn/toolbox/index.md): building blocks grouped by the job they do.
+4. [Playbook](content/learn/playbook/index.md): problems interviewers push on, and the moves that solve them.
+5. [Designs](content/designs/index.md): worked designs, each with a quiz.
+
+Pages without content yet show as "Coming soon" on the site.

@@ -1,0 +1,506 @@
+/* Self-hosted fonts, Latin subset only, so they work offline and stay small. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('@fontsource/space-grotesk/files/space-grotesk-latin-600-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono Variable';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2')
+    format('woff2');
+}
+
+:root {
+  --vp-font-family-base:
+    'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --vp-font-family-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Monaco, Consolas, monospace;
+  --book-font-display: 'Space Grotesk', var(--vp-font-family-base);
+
+  /* Teal brand. brand-1 is used for text and links, brand-3 for filled buttons. */
+  --vp-c-brand-1: #0e7490;
+  --vp-c-brand-2: #155e75;
+  --vp-c-brand-3: #0e7490;
+  --vp-c-brand-soft: rgba(14, 116, 144, 0.12);
+
+  /* Darker than VitePress's defaults so inline code and code labels pass 4.5:1 contrast. */
+  --vp-code-color: var(--vp-c-brand-2);
+  --vp-code-lang-color: var(--vp-c-text-2);
+}
+
+/* Slate blue-grey instead of VitePress's near-black, which felt heavy over a long read. */
+.dark {
+  --vp-c-bg: #1e2631;
+  --vp-c-bg-alt: #19202a;
+  --vp-c-bg-elv: #26303c;
+  --vp-c-bg-soft: #252f3b;
+  --vp-c-border: #3d4a59;
+  --vp-c-divider: #313c49;
+  --vp-c-gutter: #141a21;
+  --vp-c-text-1: #e2e8ef;
+  --vp-c-text-2: #a3afbd;
+  --vp-c-text-3: #8b97a6;
+
+  --vp-c-brand-1: #22d3ee;
+  --vp-c-brand-2: #67e8f9;
+  --vp-c-brand-3: #0e7490;
+  --vp-c-brand-soft: rgba(34, 211, 238, 0.14);
+  --vp-code-color: var(--vp-c-brand-1);
+  /* The theme takes button hover and press colours from brand-2 and brand-1, which are
+     light cyan in dark mode; white text needs darker shades. */
+  --vp-button-brand-hover-bg: #155e75;
+  --vp-button-brand-active-bg: #164e63;
+}
+
+/* At 320 px the logo pushes the nav wider than the screen. */
+@media (max-width: 359px) {
+  .VPNavBarTitle .logo {
+    display: none;
+  }
+}
+
+/* VitePress moves the nav links out of the menu at 768 px, but our five links only fit next
+   to search once the sidebar appears at 960 px. Until then they stay in the menu. */
+@media (min-width: 768px) and (max-width: 959px) {
+  body .VPNavBar .VPNavBarMenu,
+  body .VPNavBar .VPNavBarExtra {
+    display: none;
+  }
+
+  body .VPNavBar .VPNavBarHamburger {
+    display: flex;
+  }
+
+  body .VPNav .VPNavScreen {
+    display: block;
+  }
+}
+
+/* From 960 px the sidebar takes room, and five links, search, the menu and the Aa button
+   only just fit; tighter link padding keeps the Aa button on screen until 1100 px. */
+@media (min-width: 960px) and (max-width: 1099px) {
+  body .VPNavBarMenu .VPNavBarMenuLink {
+    padding: 0 8px;
+  }
+}
+
+/* The offline badge comes from the slot after the theme toggle; ordering search and the links
+   first puts it between them and the toggle. */
+.VPNavBar .content-body > .search,
+.VPNavBar .content-body > .menu {
+  order: -2;
+}
+
+.VPNavBar .content-body:has(> .offline) > .appearance::before {
+  display: none;
+}
+
+/* Display font for page titles, section headings and the site name. */
+.vp-doc h1,
+.vp-doc h2,
+.VPNavBarTitle .title,
+.VPHero .name,
+.VPHero .text {
+  font-family: var(--book-font-display);
+  letter-spacing: -0.02em;
+}
+
+.vp-doc h1 {
+  font-size: calc(36px * var(--book-text-scale, 1));
+  line-height: 1.15;
+}
+
+@media (min-width: 768px) {
+  .vp-doc h1 {
+    font-size: calc(40px * var(--book-text-scale, 1));
+  }
+}
+
+/* Text size: VitePress sizes note text in fixed pixels, so each size is multiplied by the
+   reader's choice (--book-text-scale on <html>, 1 by default). Nav and sidebar stay as they are. */
+.vp-doc {
+  --vp-custom-block-font-size: calc(14px * var(--book-text-scale, 1));
+  font-size: calc(16px * var(--book-text-scale, 1));
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc p {
+  line-height: calc(28px * var(--book-text-scale, 1));
+}
+
+.vp-doc h2 {
+  font-size: calc(24px * var(--book-text-scale, 1));
+  line-height: calc(32px * var(--book-text-scale, 1));
+}
+
+.vp-doc h3 {
+  font-size: calc(20px * var(--book-text-scale, 1));
+  line-height: calc(28px * var(--book-text-scale, 1));
+}
+
+.vp-doc h4 {
+  font-size: calc(18px * var(--book-text-scale, 1));
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc blockquote > p {
+  font-size: calc(16px * var(--book-text-scale, 1));
+}
+
+.vp-doc th,
+.vp-doc td {
+  font-size: calc(14px * var(--book-text-scale, 1));
+}
+
+.vp-doc .custom-block,
+.vp-doc .custom-block p {
+  line-height: calc(24px * var(--book-text-scale, 1));
+}
+
+.vp-doc h5,
+.vp-doc h6 {
+  font-size: calc(16px * var(--book-text-scale, 1));
+}
+
+/* Pictures sit in a tinted panel and fit inside it, with the zoom button in the panel's
+   bottom-right corner. The caption sits centred under the panel. */
+:root {
+  --book-figure-bg: #f7f9fa;
+  --book-figure-border: #e3e8ec;
+}
+
+.dark {
+  --book-figure-bg: var(--vp-c-bg-soft);
+  --book-figure-border: var(--vp-c-divider);
+}
+
+/* Buttons that delete saved progress. The filled one keeps white text in both modes. */
+:root {
+  --book-danger: #9a3412;
+  --book-danger-border: #f1c4b0;
+  --book-danger-fill: #b42318;
+  --book-danger-fill-hover: #912018;
+}
+
+.dark {
+  --book-danger: #fdba74;
+  --book-danger-border: rgba(253, 186, 116, 0.35);
+}
+
+/* Filled grey buttons beside a brand one, such as "Copy page" next to "Listen". */
+:root {
+  --book-chip: #ebeef0;
+  --book-chip-hover: #e0e5e8;
+}
+
+.dark {
+  --book-chip: #2e3a47;
+  --book-chip-hover: #384655;
+}
+
+/* Quiz answers. Wrong ones in orange; right ones use the brand colour, and the tick on a
+   right one is dark in dark mode, where the brand colour is too light for white. */
+:root {
+  --book-wrong: #c2410c;
+  --book-wrong-soft: #fff4ed;
+  --book-on-right: #fff;
+}
+
+.dark {
+  --book-wrong: #ea580c;
+  --book-wrong-soft: rgba(251, 146, 60, 0.12);
+  --book-on-right: var(--vp-c-bg);
+}
+
+.vp-doc .figure {
+  --book-figure-pad: clamp(12px, 3vw, 24px);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 24px 0 16px;
+}
+
+/* The panel is drawn behind the image rather than on it, so the dark-mode filter on the image
+   doesn't invert it. */
+.vp-doc .figure::before {
+  content: '';
+  grid-area: 1 / 1;
+  border: 1px solid var(--book-figure-border);
+  border-radius: 12px;
+  background: var(--book-figure-bg);
+}
+
+.vp-doc .figure > img {
+  grid-area: 1 / 1;
+  align-self: center;
+  justify-self: center;
+  max-width: calc(100% - 2 * var(--book-figure-pad));
+  height: auto;
+  margin: var(--book-figure-pad) 0;
+  cursor: zoom-in;
+}
+
+/* On small screens the padding is too thin for the zoom button, so it gets a strip of its own
+   under the picture rather than sitting on the drawing. */
+@media (max-width: 767px) {
+  .vp-doc .figure > img {
+    margin-bottom: 44px;
+  }
+}
+
+.vp-doc .figure-caption {
+  grid-row: 2;
+  margin-top: 10px;
+  color: var(--vp-c-text-2);
+  text-align: center;
+  font-size: calc(14px * var(--book-text-scale, 1));
+  line-height: 1.5;
+}
+
+/* A 44 px tap target; the visible circle is 32 px, in the panel's colour, so the icon stays
+   readable where it overlaps a line or the corner of a shape. Positioned, so it stays above the
+   image, which the dark-mode filter lifts into its own layer. */
+.vp-doc .zoom-button {
+  position: relative;
+  z-index: 1;
+  grid-area: 1 / 1;
+  align-self: end;
+  justify-self: end;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin: 2px;
+  padding: 6px;
+  border-radius: 50%;
+  background: var(--book-figure-bg) content-box;
+  color: var(--vp-c-text-2);
+}
+
+/* Hover only with a mouse: after a tap, a touch screen would keep the tint on. */
+@media (hover: hover) {
+  .vp-doc .zoom-button:hover {
+    background-color: color-mix(in srgb, var(--vp-c-brand-1) 14%, var(--book-figure-bg));
+    color: var(--vp-c-brand-1);
+  }
+}
+
+.vp-doc .zoom-button:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: -2px;
+}
+
+/* Diagrams are drawn for a light page. */
+.dark .vp-doc img,
+.dark .zoom-dialog img {
+  filter: invert(93%) hue-rotate(180deg);
+}
+
+/* The page behind a popup stays put. Keeping the scrollbar's space stops the column
+   reflowing, which would move the reader's place; `noteScrollbar()` says whether there was one. */
+html:has(.zoom-dialog[open]),
+html:has(.reset-dialog[open]) {
+  overflow: hidden;
+}
+html.has-scrollbar:has(.zoom-dialog[open]),
+html.has-scrollbar:has(.reset-dialog[open]) {
+  scrollbar-gutter: stable;
+}
+
+/* Callouts: GitHub alert syntax (> [!TIP]) in the kind's colour, with an icon. The quiz's
+   feedback (.book-callouts) uses the same markup outside the note text. */
+:is(.vp-doc, .book-callouts) .custom-block.github-alert {
+  border: 0;
+  border-left: 4px solid var(--book-alert);
+  border-radius: 0 8px 8px 0;
+  background-color: var(--book-alert-bg);
+  color: var(--vp-c-text-1);
+}
+
+:is(.vp-doc, .book-callouts) .custom-block.github-alert .custom-block-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--book-alert);
+  font-weight: 600;
+}
+
+:is(.vp-doc, .book-callouts) .custom-block.github-alert .custom-block-title::before {
+  content: '';
+  flex: none;
+  width: 18px;
+  height: 18px;
+  background-color: currentColor;
+  mask: var(--book-alert-icon) center / contain no-repeat;
+}
+
+:is(.vp-doc, .book-callouts) .github-alert.note,
+:is(.vp-doc, .book-callouts) .github-alert.info {
+  --book-alert: #475569;
+  --book-alert-bg: rgba(71, 85, 105, 0.08);
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M12 11v5M12 8h.01'/%3E%3C/svg%3E");
+}
+
+:is(.vp-doc, .book-callouts) .github-alert.tip {
+  --book-alert: #0e7490;
+  --book-alert-bg: rgba(14, 116, 144, 0.08);
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18h6M10 21h4M12 3a6 6 0 0 0-4 10.5c.6.6 1 1.4 1 2.5h6c0-1.1.4-1.9 1-2.5A6 6 0 0 0 12 3z'/%3E%3C/svg%3E");
+}
+
+:is(.vp-doc, .book-callouts) .github-alert.important {
+  --book-alert: #6d28d9;
+  --book-alert-bg: rgba(109, 40, 217, 0.07);
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3Cpath d='M12 7v4M12 14h.01'/%3E%3C/svg%3E");
+}
+
+:is(.vp-doc, .book-callouts) .github-alert.warning {
+  --book-alert: #9a4a07;
+  --book-alert-bg: rgba(217, 119, 6, 0.09);
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z'/%3E%3Cpath d='M12 9v4M12 17h.01'/%3E%3C/svg%3E");
+}
+
+:is(.vp-doc, .book-callouts) .github-alert.caution,
+:is(.vp-doc, .book-callouts) .github-alert.danger {
+  --book-alert: #b91c1c;
+  --book-alert-bg: rgba(220, 38, 38, 0.07);
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7.9 2h8.2L22 7.9v8.2L16.1 22H7.9L2 16.1V7.9z'/%3E%3Cpath d='M12 8v4M12 16h.01'/%3E%3C/svg%3E");
+}
+
+.dark :is(.vp-doc, .book-callouts) .github-alert.note,
+.dark :is(.vp-doc, .book-callouts) .github-alert.info {
+  --book-alert: #94a3b8;
+  --book-alert-bg: rgba(148, 163, 184, 0.1);
+}
+
+.dark :is(.vp-doc, .book-callouts) .github-alert.tip {
+  --book-alert: #22d3ee;
+  --book-alert-bg: rgba(34, 211, 238, 0.09);
+}
+
+.dark :is(.vp-doc, .book-callouts) .github-alert.important {
+  --book-alert: #a78bfa;
+  --book-alert-bg: rgba(167, 139, 250, 0.1);
+}
+
+.dark :is(.vp-doc, .book-callouts) .github-alert.warning {
+  --book-alert: #fbbf24;
+  --book-alert-bg: rgba(251, 191, 36, 0.09);
+}
+
+.dark :is(.vp-doc, .book-callouts) .github-alert.caution,
+.dark :is(.vp-doc, .book-callouts) .github-alert.danger {
+  --book-alert: #f87171;
+  --book-alert-bg: rgba(248, 113, 113, 0.1);
+}
+
+/* A right quiz answer: the Tip callout with a tick instead of the bulb. */
+.book-callouts .github-alert.tip.quiz-right {
+  --book-alert-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='m8 12 3 3 5-6'/%3E%3C/svg%3E");
+}
+
+/* The outline draws its own circles and line (VPDocOutlineItem.vue), so VitePress's marker and
+   left border would double them up. */
+.VPDocAsideOutline .outline-marker {
+  display: none;
+}
+
+.VPDocAsideOutline .content {
+  border-left: 0;
+  padding-left: 0;
+}
+
+/* VitePress leaves 32 px empty under the right column. With the outline and the page panel the
+   column often just fills the window, and that gap became the only thing to scroll to. */
+.VPDoc .aside-content {
+  padding-bottom: 12px;
+}
+
+/* VitePress fades the bottom 32 px of the window over the right column; with the smaller gap
+   above, it covered the end of the page panel even when scrolled to the bottom. */
+.VPDoc .aside-curtain {
+  display: none;
+}
+
+/* A thin progress bar: the page panel and the home page cards. */
+.book-bar {
+  display: block;
+  width: 100%;
+  height: var(--book-bar-height, 4px);
+  border: 0;
+  border-radius: 999px;
+  appearance: none;
+  background: var(--vp-c-default-soft);
+  overflow: hidden;
+}
+
+.book-bar::-webkit-progress-bar {
+  background: var(--vp-c-default-soft);
+}
+
+.book-bar::-webkit-progress-value {
+  background: var(--vp-c-brand-1);
+}
+
+.book-bar::-moz-progress-bar {
+  background: var(--vp-c-brand-1);
+}
+
+/* Listening: the box behind the block being read, its sentence, and the player's menus. */
+:root {
+  --listen-block: color-mix(in srgb, var(--vp-c-brand-1) 9%, var(--vp-c-bg));
+  --listen-sentence: color-mix(in srgb, var(--vp-c-brand-1) 24%, var(--vp-c-bg));
+  --listen-chip: #eef1f4;
+  --listen-chip-hover: #e4e8ed;
+  --listen-chip-edge: rgba(15, 23, 42, 0.04);
+  --listen-menu: #ffffff;
+  --listen-menu-shadow: 0 18px 48px rgba(15, 23, 42, 0.18), 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.dark {
+  --listen-block: color-mix(in srgb, var(--vp-c-brand-1) 12%, var(--vp-c-bg));
+  --listen-sentence: color-mix(in srgb, var(--vp-c-brand-1) 30%, var(--vp-c-bg));
+  --listen-chip: #35414f;
+  --listen-chip-hover: #3e4b5b;
+  --listen-chip-edge: rgba(255, 255, 255, 0.06);
+  --listen-menu: #2c3745;
+  --listen-menu-shadow: 0 18px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* The listening box sits behind the text, so the content column gets its own stacking layer.
+   The player's z-index values then rank it only inside this column. */
+.VPDoc > .container > .content {
+  isolation: isolate;
+}
+
+::highlight(listen-sentence) {
+  background-color: var(--listen-sentence);
+  color: inherit;
+}
+
+/* The phone player covers the bottom of the screen, so the page gets that much more room. */
+.listen-sheet-open .VPDoc {
+  padding-bottom: calc(96px + var(--listen-player-space, 0px));
+}
+
+/* The Designs page runs wide for its cards; its text keeps the usual reading width. */
+.designs-page .vp-doc > div > :not(.design-cards) {
+  max-width: 688px;
+}
