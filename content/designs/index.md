@@ -8,6 +8,7 @@ once it's written.
 - [API Gateway](api-gateway/design.md): routing, auth and rate limiting in front of many services.
 - [Chat System](chat-system/design.md): one-to-one and group messaging with delivery receipts.
 - [Distributed Cache](distributed-cache/design.md): eviction, replication and consistency.
+- [Live Soccer Dashboard](live-soccer-dashboard/design.md): the score, match events (goals, cards, substitutions) and live stats updating in real time, with match data from a third-party provider.
 - [Load Balancer](load-balancer/design.md): spreading traffic and handling unhealthy servers.
 - [Logging and Monitoring](logging-monitoring-system/design.md): collecting, storing and alerting on logs and metrics.
 - [News Feed](news-feed/design.md): building feeds with fan-out on write and on read.
