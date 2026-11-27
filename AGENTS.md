@@ -26,7 +26,6 @@ System design interview notes, published as an offline-first ebook at https://me
   - `progress/store.ts` keeps reading progress and quiz scores in `localStorage`; `progress/useProgress.ts` is its Vue wrapper; `progress/reading.ts` holds the in-progress/done rules; `progress/live.ts` is where the reader is right now
   - `components/VPSidebarItem.vue`, `VPDocOutlineItem.vue` and `VPLocalNavOutlineDropdown.vue` are our copies of VitePress components (sidebar marks and `<details>` groups, read-section ticks, the % read ring), swapped in by an alias in the config; recheck them when upgrading VitePress
 - `scripts/` — build scripts; `tests/` — unit tests
-- `specs/` — local-only planning docs (git-excluded)
 
 ## Writing content
 
